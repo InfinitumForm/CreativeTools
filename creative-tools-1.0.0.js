@@ -121,6 +121,37 @@ $.isImage = function(string) {
 */
 $.isImg = function(string) { return $.isImage(string); };
 /*
+*	$.toSlug(text) - Convert text to URL slug
+*/
+$.toSlug = function(text) {
+	var arrayFind=['š','đ','č','ć','ž','љ','њ','е','р','т','з','у','и','о','п','ш','ђ','а','с','д','ф','г','х','ј','к','л','ч','ћ','ж','ѕ','џ','ц','в','б','н','м',/[^\w-]+/, / /g,'--',/[^a-z0-9\-]/g,"--","---"],
+		arrayRemove=['s','dj','c','c','z','q','w','e','r','t','z','u','i','o','p','s','dj','a','s','d','f','g','h','j','k','l','c','c','z','s','dz','c','v','b','n','m','-','-','-','','-','-'],
+		maxArr=arrayFind.length;
+	text=text.toLowerCase();
+	for(var i=0; i<maxArr; i++){
+		text=text.replace(arrayFind[i],arrayRemove[i]);
+	}
+	return text;
+};
+/*
+*	$.urlExists(url) - Check URL exists
+*/
+$.urlExists = function(url) {
+	var request = new XMLHttpRequest();  
+	request.open('GET', url, true);
+	request.onreadystatechange = function(){
+		if (request.readyState === 4){
+			if (request.status === 404)  
+				return false;
+			else
+				return true;
+			
+		}
+		return false;
+	};
+	//request.send();
+};
+/*
 *	$.compare(value1, value2, operator) - Safe compare 2 strings, return BOOLEAN true/false
 
 	EXAMPLE 1:
@@ -1612,7 +1643,6 @@ $.fn.replaceWords = function(assocArray){
 		 });
 	  });
 };
-
 //-End jQuery
 }(jQuery));
 /*
