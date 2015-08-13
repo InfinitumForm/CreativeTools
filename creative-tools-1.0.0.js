@@ -190,7 +190,7 @@ $.urlExists = function(url) {
 	"<"						value1 < value2 = true
 	">="					value1 >= value2 = true
 	"<="					value1 <= value2 = true
-	"=", "==", "double"		value1 == value2 = true
+	"=", "==", "double", "equal"		value1 == value2 = true
 	"===", "!"				value1 === value2 = true // absolute
 	
 	"|", "||", "or", "?"	//compare 2 values:
@@ -214,7 +214,7 @@ $.compare = function (value1, value2, operator){
 		return (value1 < value2);
 	else if(operator=='<=')
 		return (value1 <= value2);
-	else if(operator=='=' || operator=='==' || operator=='double')
+	else if(operator=='=' || operator=='==' || operator=='double' || operator=='equal')
 		return (value1 == value2);
 	else if(operator=='===' || operator=='absolute' || operator=='!')
 		return (value1 === value2);
