@@ -1,5 +1,5 @@
 /**********************************************************
- * Creative Tools v1.0.5 (http://creativform.com)
+ * Creative Tools v1.0.6 (http://creativform.com)
  * created: 11/6/2014 14:35 (EST)
  * Copyright 2014 CreativForm.com
  * Created by: Ivijan-Stefan Stipic (creativform@gmail.com)
@@ -99,7 +99,7 @@ $.isFunction = function (string){
 */
 $.empty = function (string, tinyMCE_ID){
 	string = $.trim(string);
-	if (tinyMCE_ID!=='' && $.isset(tinyMCE) && $.isFunction(tinyMCE) && (string.length > 0)) {
+	if (typeof(tinyMCE) !== 'undefined' && tinyMCE_ID!=='' && $.isset(tinyMCE) && $.isFunction(tinyMCE) && (string.length > 0)) {
 		string = tinyMCE.get(tinyMCE_ID).getContent();
 	}
 	return ((string===false || string=='' || $.isNull(string) && string.length === 0) ? true : false);
