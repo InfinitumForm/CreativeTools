@@ -1,9 +1,11 @@
 /**********************************************************
- * Creative Tools v1.0.6 (http://creativform.com)
- * created: 11/6/2014 14:35 (EST)
- * Copyright 2014 CreativForm.com
- * Created by: Ivijan-Stefan Stipic (creativform@gmail.com)
- * Licensed under MIT License)
+ * Creative Tools
+ * Author: Ivijan-Stefan Stipic
+ * Author URI: http://creativform.com
+ * Version: 1.0.6
+ * License: GNU General Public License
+ * License URI: http://www.gnu.org/licenses/gpl.html
+ * This script is licensed under the GPL.
 ***********************************************************/
 ;(function($){
 /*
