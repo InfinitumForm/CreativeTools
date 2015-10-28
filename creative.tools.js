@@ -280,9 +280,9 @@ $.upperFirst = function(string){
 	return string && string.charAt(0).toUpperCase() + string.slice(1);
 };
 /*
-*	$.prepend(number, max) - Adding extra zeros in front of a number
+*	$.sprintf(number, max) - Adding extra zeros in front of a number
 */
-$.prepend = function(number, max) {
+$.sprintf = function(number, max) {
 	var str = number.toString();
 	return ((str.length < max) ? $.prepend("0" + str, max) : str);
 };
