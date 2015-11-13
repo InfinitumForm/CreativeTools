@@ -2,7 +2,7 @@
  * Creative Tools
  * Author: Ivijan-Stefan Stipic
  * Author URI: http://creativform.com
- * Version: 1.0.6
+ * Version: 1.0.7
  * License: GNU General Public License
  * License URI: http://www.gnu.org/licenses/gpl.html
  * This script is licensed under the GPL.
@@ -12,7 +12,7 @@
 *	$.isset(string) - Check if string is setup or not, return BOOLEAN true/false
 */
 $.isset = function (string){
-	return (typeof(string) !== "undefined");
+	return (typeof(string) !== "undefined" && string.length);
 };
 /*1
 *	$.isNull(string) - Check if string is NULL, return BOOLEAN true/false
