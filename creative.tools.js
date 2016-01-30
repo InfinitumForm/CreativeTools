@@ -1,61 +1,11 @@
-/**********************************************************
- * Creative Tools
- * Author: Ivijan-Stefan Stipic
- * Author URI: http://creativform.com
- * Version: 1.0.7
- * License: GNU General Public License
- * License URI: http://www.gnu.org/licenses/gpl.html
- * This script is licensed under the GPL.
-***********************************************************/
+/** 
+* @desc Creative Tools v1.0.0 (http://creativform.com)
+* examples $.empty(), $.isset(), $date(), $.cookie()
+* @author Ivijan-Stefan Stipic (creativform@gmail.com)
+* @required jQuery library
+* @license Licensed under MIT License
+*/
 ;(function($){
-/*
-*	$.isset(string) - Check if string is setup or not, return BOOLEAN true/false
-*/
-$.isset = function (string){
-	return (typeof(string) !== "undefined" && string.length);
-};
-/*1
-*	$.isNull(string) - Check if string is NULL, return BOOLEAN true/false
-*/
-$.isNull = function (string){
-	return (string===null);
-};
-/*
-*	$.isBool(string) - Check if string is boolean, return BOOLEAN true/false
-*/
-$.isBool = function (string){
-	return (typeof(string) === "boolean");
-};
-/*
-*	$.isObject(string) - Check if string is object, return BOOLEAN true/false
-*/
-$.isObject = function (string){
-	return (typeof(string) === "object");
-};
-/*
-*	$.isNumber(string) - Check if string is number, return BOOLEAN true/false
-*/
-$.isNumber = function (string){
-	return (typeof(string) === "number");
-};
-/*
-*	$.isString(string) - Check if string is real string, return BOOLEAN true/false
-*/
-$.isString = function (string){
-	return (typeof(string) === "string");
-};
-/*
-*	$.isSymbol(string) - Check if string is symbol, return BOOLEAN true/false
-*/
-$.isSymbol = function (string){
-	return (typeof(string) === "symbol");
-};
-/*
-*	$.isFunction(string) - Check if string is function, return BOOLEAN true/false
-*/
-$.isFunction = function (string){
-	return (typeof(string) === "function");
-};
 /*
 *	$.empty(string) -  Returns BOOLEAN "true" if string is false, empty or null; or "false" if string is true, not empty or not null
 *	
@@ -99,18 +49,84 @@ $.isFunction = function (string){
 		// string is not empty
 	}
 */
-$.empty = function (string, tinyMCE_ID){
-	string = $.trim(string);
-	if (typeof(tinyMCE) !== 'undefined' && tinyMCE_ID!=='' && $.isset(tinyMCE) && $.isFunction(tinyMCE) && (string.length > 0)) {
-		string = tinyMCE.get(tinyMCE_ID).getContent();
+$.empty = function (obj, tinyMCE_ID){
+	if(!obj || obj== null || obj === ''){
+		return true;
 	}
-	return ((string===false || string=='' || $.isNull(string) && string.length === 0) ? true : false);
+	else{
+		var lengthEmpty = function(objj){
+			if (objj.length && objj.length > 0) return false;
+			for (var prop in objj) return false;
+    	return true;
+		}
+		
+		if (tinyMCE_ID && tinyMCE_ID!=='' && typeof(tinyMCE) !== 'undefined' && $.isFunction(tinyMCE) && (obj.length > 0)) {
+			obj = tinyMCE.get(tinyMCE_ID).getContent();
+			return lengthEmpty(obj);
+		} else return lengthEmpty(obj);
+	}
+	return true;
+}
+/*
+*	$.isset(string) - Check if string is setup or not, return BOOLEAN true/false
+*/
+$.isset = function (string){
+	return ((typeof(string) !== "undefined" && string.length>0) ? true : false );
+};
+/*
+*	$.isNull(string) - Check if string is NULL, return BOOLEAN true/false
+*/
+$.isNull = function (string){
+	return (string===null);
+};
+/*
+*	$.isBool(string) - Check if string is boolean, return BOOLEAN true/false
+*/
+$.isBool = function (string){
+	return (typeof(string) === "boolean");
+};
+/*
+*	$.isObject(string) - Check if string is object, return BOOLEAN true/false
+*/
+$.isObject = function (string){
+	return (typeof(string) === "object");
+};
+/*
+*	$.isNumber(string) - Check if string is number, return BOOLEAN true/false
+*/
+$.isNumber = function (string){
+	return (typeof(string) === "number");
+};
+/*
+*	$.isNumeric(string) - Check if string is numeric, return BOOLEAN true/false
+*/
+$.isNumeric = function (obj){
+	return !jQuery.isArray( obj ) && (obj - parseFloat( obj ) + 1) >= 0;
+};
+/*
+*	$.isString(string) - Check if string is real string, return BOOLEAN true/false
+*/
+$.isString = function (string){
+	return (typeof(string) === "string");
+};
+/*
+*	$.isSymbol(string) - Check if string is symbol, return BOOLEAN true/false
+*/
+$.isSymbol = function (string){
+	return (typeof(string) === "symbol");
+};
+/*
+*	$.isFunction(string) - Check if string is function, return BOOLEAN true/false
+*/
+$.isFunction = function (string){
+	return (typeof(string) === "function");
 };
 /*
 *	$.isMobile(string) - Check if browser is mobile, return BOOLEAN true/false
 */
 $.isMobile=function(){
-	return ((/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())) ? true : false);
+	/*return ((/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())) ? true : false);*/
+	return ((/android|webos|avantgo|iphone|ipad|ipod|blackberry|iemobile|bolt|boost|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos/i.test(navigator.userAgent.toLowerCase())) ? true : false);
 };
 /*
 *	$.isImage(string) - Check if string is image, return BOOLEAN true/false
@@ -122,6 +138,143 @@ $.isImage = function(string) {
 *	$.isImg(string) - alias of $.isImage(string), return BOOLEAN true/false
 */
 $.isImg = function(string) { return $.isImage(string); };
+/*
+*	$.toSlug(text) - Convert text to URL slug
+*/
+$.toSlug = function(text) {
+	var arrayFind=['š','đ','č','ć','ž','љ','њ','е','р','т','з','у','и','о','п','ш','ђ','а','с','д','ф','г','х','ј','к','л','ч','ћ','ж','ѕ','џ','ц','в','б','н','м',/[^\w-]+/, / /g,'--',/[^a-z0-9\-]/g,"--","---"],
+		arrayRemove=['s','dj','c','c','z','q','w','e','r','t','z','u','i','o','p','s','dj','a','s','d','f','g','h','j','k','l','c','c','z','s','dz','c','v','b','n','m','-','-','-','','-','-'],
+		maxArr=arrayFind.length;
+	text=text.toLowerCase();
+	for(var i=0; i<maxArr; i++){
+		text=text.replace(arrayFind[i],arrayRemove[i]);
+	}
+	return text;
+};
+/*
+*	$.toObjects(object) - Convert objects from array
+*/
+$.toObjects = function(t) {
+	for (var e = {}, n = 0; n < t.length; n++) void 0 !== t[n] && (e[n] = t[n]);
+	return e
+};
+/*
+*	$.toArray(object) - Convert array from object
+*/
+$.toArray = function(t) {
+	var e = function(t) {
+			return !isNaN(parseFloat(t)) && isFinite(t)
+		},
+		n = [];
+	for (var r in t) t.hasOwnProperty(r) && (e(r) ? n[r] = t[r] : n.push(t[r]));
+	return n
+};
+/*
+*	$.shuffle(array) - Shuffle array to get some random results
+*/
+$.shuffle = function(t) {
+	for (var e, n, r = t.length; 0 !== r;) n = Math.floor(Math.random() * r), r -= 1, e = t[r], t[r] = t[n], t[n] = e;
+	return t
+};
+/*
+*	$.rand(min, max) - Get random number
+*/
+$.rand = function (min, max) {
+	if($.empty(min) || $.empty(max))
+		return Math.floor(Math.random() * (999999 - 1 + 1)) + 1;
+	else
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+/*
+*	$.urlExists(url) - Check URL exists
+*/
+$.urlExists = function(url) {
+	var request = new XMLHttpRequest();  
+	request.open('GET', url, true);
+	request.onreadystatechange = function(){
+		if (request.readyState === 4){
+			if (request.status === 404)  
+				return false;
+			else
+				return true;
+			
+		}
+		return false;
+	};
+	//request.send();
+};
+/*
+*	$.compare(value1, value2, operator) - Safe compare 2 strings, return BOOLEAN true/false
+
+	EXAMPLE 1:
+	----------------------------------------------
+	value1 = '100';
+	value2 = '50';
+	if($.compare(value1, value2, ">")){
+		// value1 is bigger then value2
+	}
+	// equal like
+	if(value1 > value2){
+		// value1 is bigger then value2
+	}
+	
+	EXAMPLE 2:
+	----------------------------------------------
+	value1 = 'john';
+	value2 = 'john';
+	if($.compare(value1, value2)){
+		// result is true. John is realy John
+	}
+	// equal like
+	if(value1 === value2){
+		// result is true. John is realy John
+	}
+	
+	OPERATORS:
+	----------------------------------------------
+	"&", "&&", "and"		//compare 2 values:
+							0 & 1 = false
+							0 & 0 = false
+							1 & 0 = false
+							1 & 1 = true
+							
+	">"						value1 > value2 = true
+	"<"						value1 < value2 = true
+	">="					value1 >= value2 = true
+	"<="					value1 <= value2 = true
+	"=", "==", "double"		value1 == value2 = true
+	"===", "!"				value1 === value2 = true // absolute
+	
+	"|", "||", "or", "?"	//compare 2 values:
+							0 || 1 = true
+							0 || 0 = false
+							1 || 0 = true
+							1 || 1 = true
+*/
+$.compare = function (value1, value2, operator){
+	value1 = value1 || null;
+	value2 = value2 || null;
+	operator = operator || "absolute";
+	
+	if(operator=='&' || operator=='&&' || operator=='and')
+		return (value1 && value2);
+	else if(operator=='>')
+		return (value1 > value2);
+	else if(operator=='>=')
+		return (value1 >= value2);
+	else if(operator=='<')
+		return (value1 < value2);
+	else if(operator=='<=')
+		return (value1 <= value2);
+	else if(operator=='=' || operator=='==' || operator=='double')
+		return (value1 == value2);
+	else if(operator=='===' || operator=='absolute' || operator=='!')
+		return (value1 === value2);
+	else if(operator=='||' || operator=='|' || operator=='or' || operator=='?')
+		return (value1 || value2);
+	else
+		return alert('Operator "'+ operator +'" in function $.compare() is not valid!');
+};
 /*
 	$(element).imgRefresh(interval); - Refresh image each ??? milisecond, default 10000 ms (10s);
 	
@@ -232,7 +385,7 @@ $.fn.onPopup=function(options){
 */
 $.rot13 = function (a,b){return++b?String.fromCharCode((a<"["?91:123)>(a=a.charCodeAt()+13)?a:a-26):a.replace(/[a-zA-Z]/g,$.rot13);};
 /*
-*	$.round(num,decimals) -  Returns the round number in string. 
+*	$.round(number,decimals) -  Returns the round number in string. 
 */
 $.round = function (number,decimals){
 	var sign = ((number >= 0) ? 1 : -1); decimals=decimals||2;
@@ -243,7 +396,7 @@ $.round = function (number,decimals){
 */
 $.count = function (array){
 	var length=array.length;
-	if(length>0) return length;
+	if(length) return length;
 	else
 	{
 		length = 0;
@@ -280,9 +433,9 @@ $.upperFirst = function(string){
 	return string && string.charAt(0).toUpperCase() + string.slice(1);
 };
 /*
-*	$.sprintf(number, max) - Adding extra zeros in front of a number
+*	$.prepend(number, max) - Adding extra zeros in front of a number
 */
-$.sprintf = function(number, max) {
+$.prepend = function(number, max) {
 	var str = number.toString();
 	return ((str.length < max) ? $.prepend("0" + str, max) : str);
 };
@@ -370,8 +523,8 @@ $.parseURL = function(str, component) {
 	}
 */
 $.validate = function(variable, filter){
-	variable = ($.trim(variable) || false);
-	filter 	 = ($.trim(filter) || false);
+	variable = $.trim(variable) || false;
+	filter 	 = $.trim(filter) || false;
 	if(variable && filter)
 	{
 		
@@ -396,6 +549,7 @@ $.validate = function(variable, filter){
 				}
 			}
 		}
+
 		else if(filter === "FLOAT")
 		{
 			if(!$.isArray( variable ) && (variable - parseFloat( variable ) + 1) >= 0)
@@ -403,7 +557,7 @@ $.validate = function(variable, filter){
 		}
 		else if(filter === "NUMBER")
 		{
-			if((variable >> 0) > 0) return variable;
+			return $.isNumeric(variable);
 		}
 		else if(filter === "FACEBOOK")
 		{
@@ -533,7 +687,7 @@ $.fn.fullScreen = function(options){
 		});
 	};
 	// set size on load page
-	$(document).ready(function(){SetupSize();});
+	$(document).on("ready",function(){SetupSize();});
 	// set size on resize window
 	$(window).on("resize",function(){SetupSize();});
 };
@@ -1122,7 +1276,7 @@ $.fn.countdown = function (options,callback) {
     }, options );
     var container = $(this[0]).html(settings.text_before + settings.duration + settings.text_after),
         countdown = setInterval(function (){
-        var dd = --settings.duration;
+        var dd = (settings.duration-1);
         if(settings.disable===true){
             clearInterval(countdown);
         }
@@ -1130,6 +1284,7 @@ $.fn.countdown = function (options,callback) {
             container.html(settings.text_before + dd + settings.text_after);
         } else {
             clearInterval(countdown);
+
             if (typeof callback == 'function') {
                 callback.call(container);   
             }
@@ -1173,39 +1328,34 @@ $.cookie=function(name, value, options){
 		domain	:	"",
 		secure	:	false,
 	}, options );
-	// cookie options
 	var path 	= 	($.empty(s.path)? "" : "; path="+s.path),
 		domain 	= 	($.empty(s.domain)? "" : "; domain="+s.domain),
-		secure 	= 	((s.secure===true)? "; secure" : ""),
-		d, expires;
-	// set name
-	name = ($.empty(neme)?'':name);
+		secure 	= 	((s.secure===true)? "; secure" : "");
+	name	=	name	|| "";
 	// Create cookie
 	if(!$.empty(value))
 	{//alert("set");
 		var expires = "";
 		if(s.expires > 0)
 		{
-			d = new Date();
+			var d = new Date();
 			d.setTime(d.getTime() + ((s.expires)*60*60*24*1000));
 			expires = "; expires="+d.toUTCString();
 		}
 		document.cookie = name + "=" + value + expires + domain + path + secure + ";";
-		// console.log("["+$.time()+"] Cookie "+name+" is created.");
 	}
 	// Destroy/Delete Cookie
 	else if($.isNull(value))
-	{
-		d = new Date();
-		d.setTime(d.getTime() - (10*365*60*60*24*1000));
-		expires = "; expires="+d.toUTCString();
+	{//alert("delete");
+		var d = new Date();
+		d.setTime(d.getTime() - (9*365*60*60*24*1000));
+		var expires = "; expires="+d.toUTCString();
 		document.cookie = name + "=;" + expires + domain + path + secure + ";";
-		// console.log("["+$.time()+"] Cookie "+name+" is deleted.");
 	}
 	// Get value from cookie
 	else
 	{
-		name = name + "=";
+		var name = name + "=";
 		var ca = document.cookie.split(";");
 		for(var i=0; i<ca.length; i++) {
 			var c = ca[i];
@@ -1255,9 +1405,9 @@ $.fn.keyPress = function (keyNumber, callback) {
 	});
 };
 /*
-*	$(element).kbdEnter(calback) - This function recognize enter key
+*	$(element).enterKey(calback) - This function recognize enter key
 */
-$.fn.kbdEnter = function (callback) {
+$.fn.enterKey = function (callback) {
     return this.keyPress(13, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1265,9 +1415,9 @@ $.fn.kbdEnter = function (callback) {
 	});
 };
 /*
-*	$(element).kbdEscape(calback) - This function recognize escape key
+*	$(element).escapeKey(calback) - This function recognize escape key
 */
-$.fn.kbdEscape = function (callback) {
+$.fn.escapeKey = function (callback) {
     return this.keyPress(27, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1275,9 +1425,9 @@ $.fn.kbdEscape = function (callback) {
 	});
 };
 /*
-*	$(element).kbdTab(calback) - This function recognize tab key
+*	$(element).tabKey(calback) - This function recognize tab key
 */
-$.fn.kbdTab = function (callback) {
+$.fn.tabKey = function (callback) {
     return this.keyPress(9, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1285,9 +1435,9 @@ $.fn.kbdTab = function (callback) {
 	});
 };
 /*
-*	$(element).kbdShift(calback) - This function recognize shift key
+*	$(element).shiftKey(calback) - This function recognize shift key
 */
-$.fn.kbdShift = function (callback) {
+$.fn.shiftKey = function (callback) {
     return this.keyPress(16, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1295,9 +1445,9 @@ $.fn.kbdShift = function (callback) {
 	});
 };
 /*
-*	$(element).kbdCtrl(calback) - This function recognize control key
+*	$(element).ctrlKey(calback) - This function recognize control key
 */
-$.fn.kbdCtrl = function (callback) {
+$.fn.ctrlKey = function (callback) {
     return this.keyPress(17, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1305,9 +1455,9 @@ $.fn.kbdCtrl = function (callback) {
 	});
 };
 /*
-*	$(element).kbdAlt(calback) - This function recognize alt key
+*	$(element).altKey(calback) - This function recognize alt key
 */
-$.fn.kbdAlt = function (callback) {
+$.fn.altKey = function (callback) {
     return this.keyPress(18, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1315,9 +1465,9 @@ $.fn.kbdAlt = function (callback) {
 	});
 };
 /*
-*	$(element).kbdCapsLk(calback) - This function recognize caps lock key
+*	$(element).capsKey(calback) - This function recognize caps lock key
 */
-$.fn.kbdCapsLk = function (callback) {
+$.fn.capsKey = function (callback) {
     return this.keyPress(20, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1325,9 +1475,9 @@ $.fn.kbdCapsLk = function (callback) {
 	});
 };
 /*
-*	$(element).kbdPageUp(calback) - This function recognize page up key
+*	$(element).pageUpKey(calback) - This function recognize page up key
 */
-$.fn.kbdPageUp = function (callback) {
+$.fn.pageUpKey = function (callback) {
     return this.keyPress(33, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1335,9 +1485,9 @@ $.fn.kbdPageUp = function (callback) {
 	});
 };
 /*
-*	$(element).kbdPageDown(calback) - This function recognize page down key
+*	$(element).pageDownKey(calback) - This function recognize page down key
 */
-$.fn.kbdPageDown = function (callback) {
+$.fn.pageDownKey = function (callback) {
     return this.keyPress(34, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1345,9 +1495,9 @@ $.fn.kbdPageDown = function (callback) {
 	});
 };
 /*
-*	$(element).kbdHome(calback) - This function recognize home key
+*	$(element).homeKey(calback) - This function recognize home key
 */
-$.fn.kbdHome = function (callback) {
+$.fn.homeKey = function (callback) {
     return this.keyPress(36, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1355,9 +1505,9 @@ $.fn.kbdHome = function (callback) {
 	});
 };
 /*
-*	$(element).kbdEnd(calback) - This function recognize end key
+*	$(element).endKey(calback) - This function recognize end key
 */
-$.fn.kbdEnd = function (callback) {
+$.fn.endKey = function (callback) {
     return this.keyPress(35, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1365,9 +1515,9 @@ $.fn.kbdEnd = function (callback) {
 	});
 };
 /*
-*	$(element).kbdPlus(calback) - This function recognize insert key
+*	$(element).plusKey(calback) - This function recognize insert key
 */
-$.fn.kbdPlus = function (callback) {
+$.fn.plusKey = function (callback) {
     return this.keyPress(43, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1375,19 +1525,20 @@ $.fn.kbdPlus = function (callback) {
 	});
 };
 /*
-*	$(element).kbdInsert(calback) - This function recognize insert key
+*	$(element).insertKey(calback) - This function recognize insert key
 */
-$.fn.kbdInsert = function (callback) {
+$.fn.insertKey = function (callback) {
     return this.keyPress(45, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
+
 		}
 	});
 };
 /*
-*	$(element).kbdDelete(calback) - This function recognize delete key
+*	$(element).deleteKey(calback) - This function recognize delete key
 */
-$.fn.kbdDelete = function (callback) {
+$.fn.deleteKey = function (callback) {
     return this.keyPress(46, function(e){
 		if (typeof callback == 'function') {
 			callback.call(this, e);
@@ -1430,7 +1581,7 @@ $.fn.createModal = function (options) {
 			'<div class="modal-dialog'+(s.large?' modal-lg':'')+'">'+
 				'<div class="modal-content">'+
 					'<div class="modal-header">'+
-						(s.close===true?'<button type="button" class="btn btn-default" style="float:right; font-size:13px; padding:5px 8px" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>':'')+
+						(s.close===true?'<button type="button" class="btn btn-danger" style="float:right; font-size:13px; padding:5px 8px" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span></button>':'')+
 						( s.header!=="" ? '<h4>'+s.header+'</h4>' : '' )+
 					'</div>'+
 					'<div class="modal-body">'+s.content+'</div>'+
@@ -1441,12 +1592,12 @@ $.fn.createModal = function (options) {
 			'</div>'+
 		'</div>';
 	This.html(modal);
-	// Display modal
 	$("#cf-modal-"+currentID).modal("show");
-	// clear modal
 	$("#cf-modal-"+currentID).on('hide.bs.modal', function(e){
-		$(this).data('modal', null).remove();
-		This.text("").html("").empty();
+		$(this).data('modal', null);
+		This.html("");
+		This.text("");
+		This.val("");
 	});
 };
 /*
@@ -1474,7 +1625,7 @@ $.fn.createModal = function (options) {
 */
 $.storage = function(name, value){
 	name = $.trim(name).toLowerCase().replace(" ","_").replace(/^a-z_/i) || "";
-	value = $.trim(value);
+	value = value || '';
 	if(!$.empty(name))
 	{
 		if(typeof(Storage) !== "undefined")
@@ -1490,7 +1641,20 @@ $.storage = function(name, value){
 				return true;
 			}
 			else return localStorage.getItem(name);
-		} else alert("WARNING!!! Your Browser is old and not have Web Storage support.\r\nPerhaps you'll have problems using this site.");
+		} else {
+			var saveStorage	=	new Cookie("storage_"+name, "/", location.host);
+			if(!$.empty(value))
+			{
+				saveStorage.tempSet(value);
+				return true;
+			}
+			else if($.isNull(value))
+			{
+				saveStorage.destroy();
+				return true;
+			}
+			else return saveStorage.get();
+		}
 	} else return (typeof(Storage) !== "undefined");
 };
 /*
@@ -1539,14 +1703,32 @@ $.fn.removeDuplicates = function(){
 	$("body").replaceWords({"foo":"bar"});
 */
 $.fn.replaceWords = function(assocArray){
-	 this.text(function(){
-		 var content = $(this).text();
-		 $.each(assocArray, function(a,b){
-			 return content.replace(a,b);
-		 });
-	  });
+	this.text(function(){
+		var content = $(this).text();
+		$.each(assocArray, function(a,b){
+			return content.replace(a,b);
+		});
+	});  
 };
-
+/*
+*	$(element).replaceContent(find, replace) - This function replace words, sentence or any HTML content.
+	EXAMPLE:
+	-------------------------------------------------------
+	$("body").replaceContent("foo","bar");
+*/
+$.fn.replaceContent = function(find, replace){
+	this.each(function(){
+		var element = $(this),
+			getHTML = element.html()
+			getParts = getHTML.split(find)
+			partMax = getParts.length,
+			save = [];
+		for(var i=0; i<partMax; i++){
+			save[i]=getParts[i];
+		}
+		element.html(save.join(replace));
+	});
+}
 //-End jQuery
 }(jQuery));
 /*
