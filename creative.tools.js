@@ -1729,6 +1729,18 @@ $.fn.replaceContent = function(find, replace){
 		element.html(save.join(replace));
 	});
 }
+/*
+*	Cache Selectors
+	EXAMPLE:
+	---------------------------------------------------------
+	$.selectorCache('#element');
+*/
+$.selectorCache = function (selector) {
+	if (!$.selector_cache[selector]) {
+		$.selector_cache[selector] = $(selector);
+	}
+	return $.selector_cache[selector];
+};
 //-End jQuery
 }(jQuery));
 /*
