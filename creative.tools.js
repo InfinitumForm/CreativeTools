@@ -1,5 +1,5 @@
 /** 
-* @desc Creative Tools v1.0.0 (http://creativform.com)
+* @desc Creative Tools v1.0.1 (http://creativform.com)
 * examples $.empty(), $.isset(), $date(), $.cookie()
 * @author Ivijan-Stefan Stipic (creativform@gmail.com)
 * @required jQuery library
@@ -21,118 +21,113 @@
 *	
 *	EXAMPLE 2:
 *	------------------------------------------------
-	val string = false;
-	if($.empty(string)){
-		// string is false
+	val element = false;
+	if($.empty(element)){
+		// element is false
 	}
 	else{
-		// string is true
+		// element is true
 	}
 *	
 *	EXAMPLE 4:
 *	------------------------------------------------
-	val string = null;
-	if($.empty(string)){
-		// string is null
+	val element = null;
+	if($.empty(element)){
+		// element is null
 	}
 	else{
-		// string is not null
+		// element is not null
 	}
 *	
 *	EXAMPLE 5 (tinyMCE support):
 *	------------------------------------------------
-	val string = $('#tinyeditor').val();
-	if($.empty(string, 'tinyeditor')){
-		// string is empty
+	val element = $('#tinyeditor').val();
+	if($.empty(element, 'tinyeditor')){
+		// element is empty
 	}
 	else{
-		// string is not empty
+		// element is not empty
 	}
 */
-$.empty = function (obj, tinyMCE_ID){
-	if(!obj || obj== null || obj === ''){
-		return true;
+$.empty = function (element, tinyMCE_ID){
+	string = $.trim(element);
+	if (tinyMCE_ID && tinyMCE_ID!=='' && typeof(tinyMCE) !== 'undefined' && $.isFunction(tinyMCE) && (element.length > 0)) {
+		element = tinyMCE.get(tinyMCE_ID).getContent();
 	}
-	else{
-		var lengthEmpty = function(objj){
-			if (objj.length && objj.length > 0) return false;
-			for (var prop in objj) return false;
-    	return true;
-		}
-		
-		if (tinyMCE_ID && tinyMCE_ID!=='' && typeof(tinyMCE) !== 'undefined' && $.isFunction(tinyMCE) && (obj.length > 0)) {
-			obj = tinyMCE.get(tinyMCE_ID).getContent();
-			return lengthEmpty(obj);
-		} else return lengthEmpty(obj);
-	}
-	return true;
-}
-/*
-*	$.isset(string) - Check if string is setup or not, return BOOLEAN true/false
-*/
-$.isset = function (string){
-	return ((typeof(string) !== "undefined" && string.length>0) ? true : false );
+	if( $.isArray( element ) || $.type( element ) === "string")
+    return (string.length === 0);
+  else{
+    if( $.isEmptyObject(element) ) return true;
+  }
+  return false;
 };
 /*
-*	$.isNull(string) - Check if string is NULL, return BOOLEAN true/false
+*	$.isset(element) - Check if string is setup or not, return BOOLEAN true/false
 */
-$.isNull = function (string){
-	return (string===null);
+$.isset = function (element){
+	return (typeof(element) !== "undefined" && element.length > 0);
 };
 /*
-*	$.isBool(string) - Check if string is boolean, return BOOLEAN true/false
+*	$.isNull(element) - Check if string is NULL, return BOOLEAN true/false
 */
-$.isBool = function (string){
-	return (typeof(string) === "boolean");
+$.isNull = function (element){
+	return (element===null);
 };
 /*
-*	$.isObject(string) - Check if string is object, return BOOLEAN true/false
+*	$.isBool(element) - Check if string is boolean, return BOOLEAN true/false
 */
-$.isObject = function (string){
-	return (typeof(string) === "object");
+$.isBool = function (element){
+	return (typeof(element) === "boolean" || element instanceof Boolean);
 };
 /*
-*	$.isNumber(string) - Check if string is number, return BOOLEAN true/false
+*	$.isObject(element) - Check if string is object, return BOOLEAN true/false
 */
-$.isNumber = function (string){
-	return (typeof(string) === "number");
+$.isObject = function (element){
+	return (typeof(element) === "object" || element instanceof Object);
 };
 /*
-*	$.isNumeric(string) - Check if string is numeric, return BOOLEAN true/false
+*	$.isNumber(element) - Check if string is number, return BOOLEAN true/false
 */
-$.isNumeric = function (obj){
-	return !jQuery.isArray( obj ) && (obj - parseFloat( obj ) + 1) >= 0;
+$.isNumber = function (element){
+	return (typeof(element) === "number" || element instanceof Number);
 };
 /*
-*	$.isString(string) - Check if string is real string, return BOOLEAN true/false
+*	$.isNumeric(element) - Check if string is numeric, return BOOLEAN true/false
 */
-$.isString = function (string){
-	return (typeof(string) === "string");
+$.isNumeric = function (element){
+	return !$.isArray( element ) && (element - parseFloat( element ) + 1) >= 0;
 };
 /*
-*	$.isSymbol(string) - Check if string is symbol, return BOOLEAN true/false
+*	$.isString(element) - Check if string is real string, return BOOLEAN true/false
 */
-$.isSymbol = function (string){
-	return (typeof(string) === "symbol");
+$.isString = function (element){
+	return (typeof(element) === "string" || element instanceof String);
 };
 /*
-*	$.isFunction(string) - Check if string is function, return BOOLEAN true/false
+*	$.isFunction(element) - Check if string is function, return BOOLEAN true/false
 */
-$.isFunction = function (string){
-	return (typeof(string) === "function");
+$.isFunction = function (element){
+	var getType = {};
+	return (element && getType.toString.call(element) === '[object Function]');
 };
 /*
-*	$.isMobile(string) - Check if browser is mobile, return BOOLEAN true/false
+*	$.isMobile() - Check if browser is mobile, return BOOLEAN true/false
 */
 $.isMobile=function(){
 	/*return ((/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())) ? true : false);*/
 	return ((/android|webos|avantgo|iphone|ipad|ipod|blackberry|iemobile|bolt|boost|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos/i.test(navigator.userAgent.toLowerCase())) ? true : false);
 };
 /*
+*	$.isTouch() - Check if device is touch, return BOOLEAN true/false
+*/
+$.isTouch = function(){
+	return (('ontouchstart' in window) || ((window.DocumentTouch) && (document instanceof DocumentTouch)) || (navigator.msMaxTouchPoints > 0) || (navigator.maxTouchPoints > 0));
+};
+/*
 *	$.isImage(string) - Check if string is image, return BOOLEAN true/false
 */
 $.isImage = function(string) {
-	return ((string.match(/\.(jpeg|jpg|gif|png)$/)!==null) ? true : false);
+	return ((string.match(/\.(jpeg|jpg|gif|png|bmp|svg|tiff|jfif|exif|ppm|pgm|pbm|pnm|webp|hdr|hif|bpg|img|pam|tga|psd|psp|xcf|cpt|vicar)$/)!==null) ? true : false);
 };
 /*
 *	$.isImg(string) - alias of $.isImage(string), return BOOLEAN true/false
@@ -180,8 +175,11 @@ $.shuffle = function(t) {
 *	$.rand(min, max) - Get random number
 */
 $.rand = function (min, max) {
-	if($.empty(min) || $.empty(max))
-		return Math.floor(Math.random() * (999999 - 1 + 1)) + 1;
+	min = min || 0;
+	max = max || 0;
+	
+	if(min===0 || max===0 || !$.isNumber(min) || !$.isNumber(max)) 
+		return Math.floor(Math.random() * 999999) + 1;
 	else
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -250,14 +248,23 @@ $.urlExists = function(url) {
 							0 || 0 = false
 							1 || 0 = true
 							1 || 1 = true
+	
+	"xor"					TRUE if either value1 or value2 is TRUE, but not both.
+							0 xor 1 = true
+							0 xor 0 = false
+							1 xor 0 = true
+							1 xor 1 = false
 */
 $.compare = function (value1, value2, operator){
-	value1 = value1 || null;
-	value2 = value2 || null;
-	operator = operator || "absolute";
+	value1 = value1.trim() || null;
+	value2 = value2.trim() || null;
+	operator = operator.trim() || "absolute";
+	operator = operator.trim().toLowerCase();
 	
 	if(operator=='&' || operator=='&&' || operator=='and')
 		return (value1 && value2);
+	else if(operator=='xor')
+		return ( value1 || value2 ) && !( value1 && value2 );
 	else if(operator=='>')
 		return (value1 > value2);
 	else if(operator=='>=')
@@ -322,6 +329,7 @@ $.fn.isChange=function(callback, options){
 			callback.call(this);
 		}
 	};
+	return $element;
 };
 /*
 	$(element).onPopup(options); - Open Popup window
@@ -376,6 +384,7 @@ $.fn.onPopup=function(options){
 			$(this).attr(s.attr), s.name, "width="+s.width+", height="+s.height+", directories="+s.directories+", toolbar="+s.toolbar+", titlebar="+s.titlebar+", scrollbars="+s.scrollbars+", fullscreen="+s.fullscreen+", location="+s.location+", resizable="+s.resizable+", top="+s.top+", left="+s.left
 		);
 	 });
+	 return $element;
 };
 /*
 *	$.rot13(string) - Perform the rot13 transform on a string
@@ -661,7 +670,8 @@ $.fn.fullScreen = function(options){
 	};
 	// make container for content
 	this.each(function(){
-		var element	= $(this),
+		var $element= this,
+			element	= $($element),
 			content	= $(this).html();
 		element.html("").append('<'+'div'+' class'+'='+'"full-screen-box-table"'+'>'+'<'+'div'+' class'+'='+'"full-screen-box-cell"'+'>'+content+'<'+'/'+'div'+'>'+'<'+'/'+'div'+'>');
 	});
@@ -690,6 +700,7 @@ $.fn.fullScreen = function(options){
 	$(document).on("ready",function(){SetupSize();});
 	// set size on resize window
 	$(window).on("resize",function(){SetupSize();});
+	return this;
 };
 /*
 	$(element).typingPreview(options); - Read textarea or input element and display in another element in real time
@@ -726,6 +737,7 @@ $.fn.typingPreview=function(options){
 			$(s.count_words).text($.countWords(content));
 		}
 	});
+	return this;
 };
 //  discuss at: http://phpjs.org/functions/date/
 // original by: Carlos R. L. Rodrigues (http://www.jsfromhell.com)
@@ -1290,6 +1302,7 @@ $.fn.countdown = function (options,callback) {
             }
         }
     }, settings.interval);
+	return this;
 };
 /*
 	$(element).clock(format); - Update element with time value in real time
@@ -1298,6 +1311,7 @@ $.fn.clock=function(format){
     var This=this;
 	format=(format||"m-d-Y H:i:s");
 	setInterval(function(){return This.html($.date(format));},1000);
+	return this;
 };
 /* $.cookie(name, [value], [options]); - jQuery cookie plugin for manipulating cookies.
 *	
@@ -1598,7 +1612,9 @@ $.fn.createModal = function (options) {
 		This.html("");
 		This.text("");
 		This.val("");
+		$(this).remove();
 	});
+	return this;
 };
 /*
 *	$.storage(name, value) - Save, edit, delete to HTML5 Local Storage
@@ -1680,6 +1696,7 @@ $.fn.responsiveImage = function(option){
 			});
 		});
 	});
+	return this;
 };
 $.fn.imgResponsive = function(option){
 	return this.responsiveImage(option);
@@ -1695,6 +1712,7 @@ $.fn.removeDuplicates = function(){
 		else
 			seen[content] = true;
 	});
+	return this;
 };
 /*
 *	$(element).replaceWords(assocArray) - This function replace words or sentence.
@@ -1708,7 +1726,8 @@ $.fn.replaceWords = function(assocArray){
 		$.each(assocArray, function(a,b){
 			return content.replace(a,b);
 		});
-	});  
+	});
+	return this;
 };
 /*
 *	$(element).replaceContent(find, replace) - This function replace words, sentence or any HTML content.
@@ -1728,19 +1747,8 @@ $.fn.replaceContent = function(find, replace){
 		}
 		element.html(save.join(replace));
 	});
+	return this;
 }
-/*
-*	Cache Selectors
-	EXAMPLE:
-	---------------------------------------------------------
-	$.selectorCache('#element');
-*/
-$.selectorCache = function (selector) {
-	if (!$.selector_cache[selector]) {
-		$.selector_cache[selector] = $(selector);
-	}
-	return $.selector_cache[selector];
-};
 //-End jQuery
 }(jQuery));
 /*
