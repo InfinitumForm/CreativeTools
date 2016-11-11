@@ -67,6 +67,13 @@ $.empty = function (element, tinyMCE_ID){
 $.isset = function (element){
 	return (typeof(element) !== "undefined" && element.length > 0);
 };
+
+/*
+*	$.isBlank(element) - Check if string is blank, return BOOLEAN true/false
+*/
+$.isBlank = function(str) {
+	return (!str || /^\s*$/.test(str));
+}
 /*
 *	$.isNull(element) - Check if string is NULL, return BOOLEAN true/false
 */
@@ -91,6 +98,18 @@ $.isObject = function (element){
 $.isNumber = function (element){
 	return (typeof(element) === "number" || element instanceof Number);
 };
+/*
+*	$.isInt(element) - Check if string is integer, return BOOLEAN true/false
+*/
+$.isInt = function(element){
+    return Number(n) === n && n % 1 === 0;
+}	
+/*
+*	$.isFloat(element) - Check if string is float, return BOOLEAN true/false
+*/
+$.isFloat = function(element){
+    return Number(element) === element && element % 1 !== 0;
+}
 /*
 *	$.isNumeric(element) - Check if string is numeric, return BOOLEAN true/false
 */
