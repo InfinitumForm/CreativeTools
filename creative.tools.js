@@ -1,6 +1,6 @@
 /** 
-* @desc Creative Tools v1.0.1 (http://creativform.com)
-* examples $.empty(), $.isset(), $date(), $.cookie()
+* Creative Tools v1.0.0
+* 
 * @author Ivijan-Stefan Stipic (creativform@gmail.com)
 * @required jQuery library
 * @license Licensed under MIT License
@@ -50,8 +50,8 @@
 	}
 */
 $.empty = function (element, tinyMCE_ID){
-	string = $.trim(element);
-	if (tinyMCE_ID && tinyMCE_ID!=='' && typeof(tinyMCE) !== 'undefined' && $.isFunction(tinyMCE) && (element.length > 0)) {
+	string = element;
+	if (tinyMCE_ID && tinyMCE_ID!='' && typeof(tinyMCE) != 'undefined' && $.isFunction(tinyMCE) && (element.length > 0)) {
 		element = tinyMCE.get(tinyMCE_ID).getContent();
 	}
 	if( $.isArray( element ) || $.type( element ) === "string")
@@ -65,20 +65,13 @@ $.empty = function (element, tinyMCE_ID){
 *	$.isset(element) - Check if string is setup or not, return BOOLEAN true/false
 */
 $.isset = function (element){
-	return (typeof(element) !== "undefined" && element.length > 0);
+	return (typeof(element) != "undefined" && element.length > 0);
 };
-
-/*
-*	$.isBlank(element) - Check if string is blank, return BOOLEAN true/false
-*/
-$.isBlank = function(str) {
-	return (!str || /^\s*$/.test(str));
-}
 /*
 *	$.isNull(element) - Check if string is NULL, return BOOLEAN true/false
 */
 $.isNull = function (element){
-	return (element===null);
+	return (!element);
 };
 /*
 *	$.isBool(element) - Check if string is boolean, return BOOLEAN true/false
@@ -98,18 +91,6 @@ $.isObject = function (element){
 $.isNumber = function (element){
 	return (typeof(element) === "number" || element instanceof Number);
 };
-/*
-*	$.isInt(element) - Check if string is integer, return BOOLEAN true/false
-*/
-$.isInt = function(element){
-    return Number(n) === n && n % 1 === 0;
-}	
-/*
-*	$.isFloat(element) - Check if string is float, return BOOLEAN true/false
-*/
-$.isFloat = function(element){
-    return Number(element) === element && element % 1 !== 0;
-}
 /*
 *	$.isNumeric(element) - Check if string is numeric, return BOOLEAN true/false
 */
@@ -134,7 +115,7 @@ $.isFunction = function (element){
 */
 $.isMobile=function(){
 	/*return ((/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase())) ? true : false);*/
-	return ((/android|webos|avantgo|iphone|ipad|ipod|blackberry|iemobile|bolt|boost|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos/i.test(navigator.userAgent.toLowerCase())) ? true : false);
+	return ((/mi(ui)?|android|webos|avantgo|iphone|ipad|ipod|blackberry|iemobile|bolt|boost|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos/i.test(navigator.userAgent.toLowerCase())) ? true : false);
 };
 /*
 *	$.isTouch() - Check if device is touch, return BOOLEAN true/false
@@ -146,30 +127,101 @@ $.isTouch = function(){
 *	$.isImage(string) - Check if string is image, return BOOLEAN true/false
 */
 $.isImage = function(string) {
-	return ((string.match(/\.(jpeg|jpg|gif|png|bmp|svg|tiff|jfif|exif|ppm|pgm|pbm|pnm|webp|hdr|hif|bpg|img|pam|tga|psd|psp|xcf|cpt|vicar)$/)!==null) ? true : false);
+	
+	if(null === string || false === string)
+		return false;
+	return ((string.match(/\.(jpeg|jpg|gif|png|bmp|svg|tiff|jfif|exif|ppm|pgm|pbm|pnm|webp|hdr|hif|bpg|img|pam|tga|psd|psp|xcf|cpt|vicar)$/)!=null) ? true : false);
+};
+/*
+*	$.isVideo(string) - Check if string is video, return BOOLEAN true/false
+*/
+$.isVideo = function(string) {
+	
+	if(null === string || false === string)
+		return false;
+	
+	return ((string.match(/\.(webm|mkv|flv|vob|ogv|ogg|drc|gifv|mng|avi|mov|qt|wmv|yuv|rm(vb)?|mp[42evg]|mpeg|m4p|3g[p2]|f4[vapb]|asf)$/)!=null) ? true : false);
 };
 /*
 *	$.isImg(string) - alias of $.isImage(string), return BOOLEAN true/false
 */
 $.isImg = function(string) { return $.isImage(string); };
 /*
+*	$.imageExists(string,callback) - Check is image exists, return BOOLEAN true/false
+*/
+$.imageExists = function(string,callback){
+	if($.isImage(string)){
+		var img = new Image(10,10);
+		img.src = string;
+		img.onload = function() {
+			if(typeof callback == 'function'){
+				callback(true);
+				img = null;
+			}
+		};
+		img.onerror = function() {
+			if(typeof callback == 'function'){
+				callback(false);
+				img = null;
+			}
+		};
+	}
+	else
+	{
+		if(typeof callback == 'function'){
+			callback(false);
+			img = null;
+		}
+	}
+};
+/*
+*	$.imgExists(string) - alias of $.isImageExists(string,callback), return BOOLEAN true/false
+*/
+$.imgExists = function(string,callback){
+	return $.imageExists(string,callback)
+};
+/*
+*	$.toSlug(text) - Convert text to URL slug
+*/
+/*
+*	$.isJSON(string) - check is string JSON format, return BOOLEAN false or parsed object
+*/
+$.isJSON = function(string) {
+	 try {
+		if (string && typeof string === "object"){
+			return string;
+		}else{			
+			var o = JSON.parse(string);
+
+			if (o && typeof o === "object") {
+				return o;
+			}
+		}
+    }
+    catch (e) { }
+
+    return false;
+};
+/*
 *	$.toSlug(text) - Convert text to URL slug
 */
 $.toSlug = function(text) {
-	var arrayFind=['š','đ','č','ć','ž','љ','њ','е','р','т','з','у','и','о','п','ш','ђ','а','с','д','ф','г','х','ј','к','л','ч','ћ','ж','ѕ','џ','ц','в','б','н','м',/[^\w-]+/, / /g,'--',/[^a-z0-9\-]/g,"--","---"],
+	text = text.replace(/\s+\s/g,' ');
+	var arrayFind=['š','đ','č','ć','ž','љ','њ','е','р','т','з','у','и','о','п','ш','ђ','а','с','д','ф','г','х','ј','к','л','ч','ћ','ж','ѕ','џ','ц','в','б','н','м',/\W/g, /\s/g,'--',/[^a-z0-9\-]/g,"--",/\-+\-/],
 		arrayRemove=['s','dj','c','c','z','q','w','e','r','t','z','u','i','o','p','s','dj','a','s','d','f','g','h','j','k','l','c','c','z','s','dz','c','v','b','n','m','-','-','-','','-','-'],
 		maxArr=arrayFind.length;
 	text=text.toLowerCase();
 	for(var i=0; i<maxArr; i++){
 		text=text.replace(arrayFind[i],arrayRemove[i]);
 	}
+	text = text.replace(/-{2,}/g,'-');
 	return text;
 };
 /*
 *	$.toObjects(object) - Convert objects from array
 */
 $.toObjects = function(t) {
-	for (var e = {}, n = 0; n < t.length; n++) void 0 !== t[n] && (e[n] = t[n]);
+	for (var e = {}, n = 0; n < t.length; n++) void 0 != t[n] && (e[n] = t[n]);
 	return e
 };
 /*
@@ -187,7 +239,7 @@ $.toArray = function(t) {
 *	$.shuffle(array) - Shuffle array to get some random results
 */
 $.shuffle = function(t) {
-	for (var e, n, r = t.length; 0 !== r;) n = Math.floor(Math.random() * r), r -= 1, e = t[r], t[r] = t[n], t[n] = e;
+	for (var e, n, r = t.length; 0 != r;) n = Math.floor(Math.random() * r), r -= 1, e = t[r], t[r] = t[n], t[n] = e;
 	return t
 };
 /*
@@ -203,23 +255,32 @@ $.rand = function (min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 /*
-*	$.urlExists(url) - Check URL exists
+*	$.urlExists(url) - Check is URL exists
 */
 $.urlExists = function(url) {
-	var request = new XMLHttpRequest();  
-	request.open('GET', url, true);
-	request.onreadystatechange = function(){
-		if (request.readyState === 4){
-			if (request.status === 404)  
-				return false;
-			else
-				return true;
-			
-		}
-		return false;
-	};
-	//request.send();
+	var http = new XMLHttpRequest();
+    http.open('HEAD', url, false);
+    http.send();
+    return http.status!=404;
 };
+    
+/*
+* $.base64_encode(str) - Encode string to Base 64 (support unicode characters)
+*/
+$.base64_encode = function(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+        return String.fromCharCode('0x' + p1);
+    }));
+}
+/*
+* $.base64_decode(str) - Decode Base 64 string to normal value (support unicode characters)
+*/
+$.base64_decode = function(str) {
+    return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+}
+
 /*
 *	$.compare(value1, value2, operator) - Safe compare 2 strings, return BOOLEAN true/false
 
@@ -259,7 +320,7 @@ $.urlExists = function(url) {
 	"<"						value1 < value2 = true
 	">="					value1 >= value2 = true
 	"<="					value1 <= value2 = true
-	"=", "==", "double"		value1 == value2 = true
+	"=", "===", "double"		value1 === value2 = true
 	"===", "!"				value1 === value2 = true // absolute
 	
 	"|", "||", "or", "?"	//compare 2 values:
@@ -275,28 +336,28 @@ $.urlExists = function(url) {
 							1 xor 1 = false
 */
 $.compare = function (value1, value2, operator){
-	value1 = value1.trim() || null;
-	value2 = value2.trim() || null;
-	operator = operator.trim() || "absolute";
-	operator = operator.trim().toLowerCase();
+	value1 = value1 || null;
+	value2 = value2 || null;
+	operator = operator || "absolute";
+	operator = operator.toLowerCase();
 	
-	if(operator=='&' || operator=='&&' || operator=='and')
+	if(operator==='&' || operator==='&&' || operator==='and')
 		return (value1 && value2);
-	else if(operator=='xor')
+	else if(operator==='xor')
 		return ( value1 || value2 ) && !( value1 && value2 );
-	else if(operator=='>')
+	else if(operator==='>')
 		return (value1 > value2);
-	else if(operator=='>=')
+	else if(operator==='>=')
 		return (value1 >= value2);
-	else if(operator=='<')
+	else if(operator==='<')
 		return (value1 < value2);
-	else if(operator=='<=')
+	else if(operator==='<=')
 		return (value1 <= value2);
-	else if(operator=='=' || operator=='==' || operator=='double')
-		return (value1 == value2);
-	else if(operator=='===' || operator=='absolute' || operator=='!')
+	else if(operator==='=' || operator==='===' || operator==='double')
 		return (value1 === value2);
-	else if(operator=='||' || operator=='|' || operator=='or' || operator=='?')
+	else if(operator==='===' || operator==='absolute' || operator==='!')
+		return (value1 === value2);
+	else if(operator==='||' || operator==='|' || operator==='or' || operator==='?')
 		return (value1 || value2);
 	else
 		return alert('Operator "'+ operator +'" in function $.compare() is not valid!');
@@ -308,13 +369,17 @@ $.compare = function (value1, value2, operator){
 	----------------------------------------------
 	$("#gallery img").imgRefresh(1000); // refresh images each 1s
 */
-$.imgRefresh=function(interval){
+$.fn.imgRefresh=function(interval){
 	var e = this,
 		s = e.attr("src"),
 		i = (interval || 10000);
-	setInterval(function(){
-		e.attr("src", s + "?" + new Date().getTime());
-	},i);
+	if(e && s)
+	{
+		setInterval(function(){
+			e.attr("src", s + "?" + new Date().getTime());
+		},i);
+	}
+	return e;
 };
 /*
 	$(element).isChange(callback, options); - Derect all changes on and in elemen
@@ -333,22 +398,21 @@ $.fn.isChange=function(callback, options){
 		offset 	: 300,
 		monitoring	: true
 	},options);
-	var $element	= this,
-		html		= $.trim($element.html()),
-		checking 	= setInterval(function() {
-			var newhtml = $.trim($element.html());
-			if (html != newhtml) {
-				answer();
-				html = newhtml;
-			}
-		},s.offset),
-	answer	= function(){
-		if (typeof callback == 'function') {
-			if(s.monitoring===false){clearInterval(checking);}
-			callback.call(this);
-		}
-	};
-	return $element;
+
+	var $this = this,
+        $init = ($this ? $this.html() : ''),
+        checking 	= setInterval(function() {
+            var $check = ($this ? $this.html() : '');
+            if($init != $check)
+            {
+                if (typeof callback === 'function') {
+					if(s.monitoring===false){clearInterval(checking);}
+					callback.call($this);
+				}
+				$init = $check;
+            }
+        },s.offset);
+    return $this;
 };
 /*
 	$(element).onPopup(options); - Open Popup window
@@ -387,8 +451,8 @@ $.fn.onPopup=function(options){
 			name		:	"Popup Window",
 			width 		:	700,
 			height		:	600,
-			left  		:	($(window).width()/2)-(700/2),
-   			top   		:	($(window).height()/2)-(600/2),
+			left  		:	false,
+   			top   		:	false,
 			resizable	:	0,
 			location	:	0,
 			fullscreen	:	0,
@@ -397,13 +461,19 @@ $.fn.onPopup=function(options){
 			toolbar		:	0,
 			directories	:	0
 		},options);
+	
+	if(s.left == true || s.left == false || s.left == null)
+		s.left = ($(window).width()/2)-(s.width/2);
+		
+	if(s.top == true || s.top == false || s.top == null)
+		s.top = ($(window).width()/2)-(s.height/2);
+		
 	$element.on("click",function(e) {
 		e.stopPropagation(); e.preventDefault();
 		window.open(
 			$(this).attr(s.attr), s.name, "width="+s.width+", height="+s.height+", directories="+s.directories+", toolbar="+s.toolbar+", titlebar="+s.titlebar+", scrollbars="+s.scrollbars+", fullscreen="+s.fullscreen+", location="+s.location+", resizable="+s.resizable+", top="+s.top+", left="+s.left
 		);
 	 });
-	 return $element;
 };
 /*
 *	$.rot13(string) - Perform the rot13 transform on a string
@@ -509,7 +579,7 @@ $.parseURL = function(str, component) {
 	if (component) {
 		return uri[component.replace('PHP_URL_', '').toLowerCase()];
 	}
-	if (mode !== 'php') {
+	if (mode != 'php') {
 		var name = (ini['phpjs.parse_url.queryKey'] &&
 		ini['phpjs.parse_url.queryKey'].local_value) || 'queryKey';
 		parser = /(?:^|&)([^&=]*)=?([^&]*)/g;
@@ -544,7 +614,7 @@ $.parseURL = function(str, component) {
 *	EXAMPLE:
 *	------------------------------------------------
 	var email=$.validate('example@domain.com', "EMAIL");
-	if(email!==false){
+	if(email!=false){
 		alert( email );
 	} else {
 		alert( 'Email is not valid' );
@@ -556,14 +626,14 @@ $.validate = function(variable, filter){
 	if(variable && filter)
 	{
 		
-		if(filter === "EMAIL")
+		if(filter === "EMAIL" || filter === "MAIL")
 		{
 			f=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			if(f.test(variable)) return variable;
 		}
 		else if(filter === "URL")
 		{
-			f=/^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})).?)(?::\d{2,5})?(?:[/?#]\S*)?$/i;
+			f=/((((s?ft|ht{2})ps?):\/{2})?([a-z0-9\-\_]{1,255})\.?([a-z0-9\-\_\@]{2,255})\.([a-z]{2,10})\:?([0-9]+)?($|\/([a-z0-9\#\!\:\.\?\+\=\&\%\@\!\-\/\|\_]+)?))/i;
 			if(f.test(variable)) return variable;
 		}
 		else if(filter === "IP")
@@ -577,7 +647,6 @@ $.validate = function(variable, filter){
 				}
 			}
 		}
-
 		else if(filter === "FLOAT")
 		{
 			if(!$.isArray( variable ) && (variable - parseFloat( variable ) + 1) >= 0)
@@ -673,9 +742,9 @@ $.fn.fullScreen = function(options){
 	// make default options or methods
 	var settings=$.extend({
 		offset		 	: 	0,
-		width			: 	0,
+		width				: 	0,
 		height			:	0,
-		css_support		:	false,
+		css_support	:	false,
 		attach			:	false,
 		attach_offset	:	0,
 	}, options ),
@@ -689,13 +758,12 @@ $.fn.fullScreen = function(options){
 	};
 	// make container for content
 	this.each(function(){
-		var $element= this,
-			element	= $($element),
+		var element	= $(this),
 			content	= $(this).html();
 		element.html("").append('<'+'div'+' class'+'='+'"full-screen-box-table"'+'>'+'<'+'div'+' class'+'='+'"full-screen-box-cell"'+'>'+content+'<'+'/'+'div'+'>'+'<'+'/'+'div'+'>');
 	});
 	var SetupSize=function(){
-		var win_height	=	((settings.attach!==false)? ($(settings.attach).height())-settings.attach_offset : $(window).height());
+		var win_height	=	((settings.attach!=false)? ($(settings.attach).height())-settings.attach_offset : $(window).height());
 		$('.full-screen-box-table').each(function(){
 			$(this).css({
 				'width':(settings.width===0?('100%'):settings.width),
@@ -716,10 +784,9 @@ $.fn.fullScreen = function(options){
 		});
 	};
 	// set size on load page
-	$(document).on("ready",function(){SetupSize();});
+	$(document).ready(function(){SetupSize();});
 	// set size on resize window
 	$(window).on("resize",function(){SetupSize();});
-	return this;
 };
 /*
 	$(element).typingPreview(options); - Read textarea or input element and display in another element in real time
@@ -746,17 +813,16 @@ $.fn.typingPreview=function(options){
 	this.on("keyup", function(){
 		var content=$(this).val(),
 			len = $(this).val().length;
-		if(s.text!=='undefined' && s.text!==false && s.text!==null){
+		if(s.text!='undefined' && s.text!=false && s.text!=null){
 			$(s.text).text(content);
 		}
-		if(s.count!=='undefined' && s.count!==false && s.count!==null){
+		if(s.count!='undefined' && s.count!=false && s.count!=null){
 			$(s.count).text(len);
 		}
-		if(s.count_words!=='undefined' && s.count_words!==false && s.count_words!==null){
+		if(s.count_words!='undefined' && s.count_words!=false && s.count_words!=null){
 			$(s.count_words).text($.countWords(content));
 		}
 	});
-	return this;
 };
 //  discuss at: http://phpjs.org/functions/date/
 // original by: Carlos R. L. Rodrigues (http://www.jsfromhell.com)
@@ -801,7 +867,7 @@ $.fn.typingPreview=function(options){
 //   example 3: date('Y W o', 1062462400);
 //   returns 3: '2003 36 2003'
 //   example 4: x = date('Y m d', (new Date()).getTime()/1000);
-//   example 4: (x+'').length == 10 // 2009 01 09
+//   example 4: (x+'').length === 10 // 2009 01 09
 //   returns 4: true
 //   example 5: date('W', 1104534000);
 //   returns 5: '53'
@@ -852,7 +918,7 @@ $.date=function(format, timestamp) {
     },
     S: function() { // Ordinal suffix for day of month; st, nd, rd, th
       var j = f.j(), i = (j % 10);
-      if (i <= 3 && parseInt((j % 100) / 10, 10) == 1) {
+      if (i <= 3 && parseInt((j % 100) / 10, 10) === 1) {
         i = 0;
       }
       return (['st', 'nd', 'rd'][i - 1] || 'th');
@@ -895,7 +961,7 @@ $.date=function(format, timestamp) {
     // Year
     L: function() { // Is leap year?; 0 or 1
       var j = f.Y();
-      return (((j % 4) === 0) & ((j % 100) !== 0) | ((j % 400) === 0));
+      return (((j % 4) === 0) & ((j % 100) != 0) | ((j % 400) === 0));
     },
     o: function() { // ISO-8601 year
       var n = f.n(), W = f.W(), Y = f.Y();
@@ -962,7 +1028,7 @@ $.date=function(format, timestamp) {
       var b = new Date(f.Y(), 6);
       // Jul 1
       var d = Date.UTC(f.Y(), 6); // Jul 1 UTC
-      return (((a - c) !== (b - d)) ? 1 : 0);
+      return (((a - c) != (b - d)) ? 1 : 0);
     },
     O: function() { // Difference to GMT in hour format; e.g. +0200
       var tzo = jsdate.getTimezoneOffset();
@@ -1205,7 +1271,7 @@ $.strtotime = function (text, now) {
   function lastNext(type, range, modifier) {
     var diff, day = days[range];
 
-    if (typeof day !== 'undefined') {
+    if (typeof day != 'undefined') {
       diff = day - date.getDay();
 
       if (diff === 0) {
@@ -1316,7 +1382,7 @@ $.fn.countdown = function (options,callback) {
         } else {
             clearInterval(countdown);
 
-            if (typeof callback == 'function') {
+            if (typeof callback === 'function') {
                 callback.call(container);   
             }
         }
@@ -1365,8 +1431,10 @@ $.cookie=function(name, value, options){
 		domain 	= 	($.empty(s.domain)? "" : "; domain="+s.domain),
 		secure 	= 	((s.secure===true)? "; secure" : "");
 	name	=	name	|| "";
+	if(typeof value === 'undefined' || value === 'undefined')
+		value = false;
 	// Create cookie
-	if(!$.empty(value))
+	if(false === value)
 	{//alert("set");
 		var expires = "";
 		if(s.expires > 0)
@@ -1378,7 +1446,7 @@ $.cookie=function(name, value, options){
 		document.cookie = name + "=" + value + expires + domain + path + secure + ";";
 	}
 	// Destroy/Delete Cookie
-	else if($.isNull(value))
+	else if(null === value)
 	{//alert("delete");
 		var d = new Date();
 		d.setTime(d.getTime() - (9*365*60*60*24*1000));
@@ -1392,248 +1460,11 @@ $.cookie=function(name, value, options){
 		var ca = document.cookie.split(";");
 		for(var i=0; i<ca.length; i++) {
 			var c = ca[i];
-			while (c.charAt(0)==" ") c = c.substring(1);
+			while (c.charAt(0)===" ") c = c.substring(1);
 			if (c.indexOf(name) != -1) return c.substring(name.length,c.length);
 		}
-		return "";
+		return null;
 	}
-};
-/*
-*	$(element).keyPress(keyNumber, calback) - This function recognize keyboard keys and return event
-*
-*	EXAMPLE 1 (if keyNumber is false, null or 0, function return key number like event):
-*	--------------------------------------------------------------
-	$(document).keyPress(false, function(e){
-		alert(e);	
-	});
-*
-*	EXAMPLE 2 (return event):
-*	--------------------------------------------------------------
-	$('form#test').keyPress(13, function(e){
-		alert('You press ENTER key!!!');	
-	});
-*/
-$.fn.keyPress = function (keyNumber, callback) {
-	keyNumber = (keyNumber || false);
-	return this.each(function () {
-		$(this).on("keypress", function (e) {
-			var keycode = (e.keyCode ? e.keyCode : e.which);
-			if(keyNumber!==false || keyNumber > 0 || keyNumber!==null)
-			{			
-				if (keycode === keyNumber) {
-					e.preventDefault();
-					if (typeof callback == 'function') {
-						callback.call(this, e);
-					}
-				}
-			}
-			else
-			{
-				e.preventDefault();
-				if (typeof callback == 'function') {
-					return callback.call(this, keycode);
-				}
-			}
-		});
-	});
-};
-/*
-*	$(element).enterKey(calback) - This function recognize enter key
-*/
-$.fn.enterKey = function (callback) {
-    return this.keyPress(13, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).escapeKey(calback) - This function recognize escape key
-*/
-$.fn.escapeKey = function (callback) {
-    return this.keyPress(27, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).tabKey(calback) - This function recognize tab key
-*/
-$.fn.tabKey = function (callback) {
-    return this.keyPress(9, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).shiftKey(calback) - This function recognize shift key
-*/
-$.fn.shiftKey = function (callback) {
-    return this.keyPress(16, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).ctrlKey(calback) - This function recognize control key
-*/
-$.fn.ctrlKey = function (callback) {
-    return this.keyPress(17, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).altKey(calback) - This function recognize alt key
-*/
-$.fn.altKey = function (callback) {
-    return this.keyPress(18, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).capsKey(calback) - This function recognize caps lock key
-*/
-$.fn.capsKey = function (callback) {
-    return this.keyPress(20, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).pageUpKey(calback) - This function recognize page up key
-*/
-$.fn.pageUpKey = function (callback) {
-    return this.keyPress(33, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).pageDownKey(calback) - This function recognize page down key
-*/
-$.fn.pageDownKey = function (callback) {
-    return this.keyPress(34, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).homeKey(calback) - This function recognize home key
-*/
-$.fn.homeKey = function (callback) {
-    return this.keyPress(36, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).endKey(calback) - This function recognize end key
-*/
-$.fn.endKey = function (callback) {
-    return this.keyPress(35, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).plusKey(calback) - This function recognize insert key
-*/
-$.fn.plusKey = function (callback) {
-    return this.keyPress(43, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).insertKey(calback) - This function recognize insert key
-*/
-$.fn.insertKey = function (callback) {
-    return this.keyPress(45, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-
-		}
-	});
-};
-/*
-*	$(element).deleteKey(calback) - This function recognize delete key
-*/
-$.fn.deleteKey = function (callback) {
-    return this.keyPress(46, function(e){
-		if (typeof callback == 'function') {
-			callback.call(this, e);
-		}
-	});
-};
-/*
-*	$(element).createModal({options}) - Create Bootstrap modal and fill content into it
-	
-	EXAMPLE:
-	-----------------------------------------------------
-	<div id="modal"></div>
-	
-	$("#modal").createModal({
-		header		: "New Modal",
-		content		: "Some content...",
-		footer		: "Is footer of modal",
-		keyboard 	: true,		// enable/disable keyboard support
-		static 		: false,	// is static or dynamic
-		close		: true		// enable, disable close button
-		large		: false		// large or small modal
-	});
-*/
-$.fn.createModal = function (options) {
-	var This	=	this,
-		s =	$.extend({
-			header		:	"",
-			content		:	"No content...",
-			footer		:	"",
-			keyboard 	:	true,
-			static 		:	true,
-			close		:	true,
-			large		:	false
-		}, options ),
-		currentID = This.selector.replace('#', '');
-	This.html("");
-	if($("#cf-modal-"+currentID)!=='undefined')	$("#cf-modal-"+currentID).data('modal', null);
-	var modal	= 
-		'<div class="modal fade" id="cf-modal-'+currentID+'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static'+(s.static?'static':'')+'" data-keyboard="'+(s.keyboard?'true':'false')+'" >'+
-			'<div class="modal-dialog'+(s.large?' modal-lg':'')+'">'+
-				'<div class="modal-content">'+
-					'<div class="modal-header">'+
-						(s.close===true?'<button type="button" class="btn btn-danger" style="float:right; font-size:13px; padding:5px 8px" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span></button>':'')+
-						( s.header!=="" ? '<h4>'+s.header+'</h4>' : '' )+
-					'</div>'+
-					'<div class="modal-body">'+s.content+'</div>'+
-					(s.footer!==""?'<div class="modal-footer">'+
-					 	s.footer+
-					'</div>':'')+
-				'</div>'+
-			'</div>'+
-		'</div>';
-	This.html(modal);
-	$("#cf-modal-"+currentID).modal("show");
-	$("#cf-modal-"+currentID).on('hide.bs.modal', function(e){
-		$(this).data('modal', null);
-		This.html("");
-		This.text("");
-		This.val("");
-		$(this).remove();
-	});
-	return this;
 };
 /*
 *	$.storage(name, value) - Save, edit, delete to HTML5 Local Storage
@@ -1660,37 +1491,354 @@ $.fn.createModal = function (options) {
 */
 $.storage = function(name, value){
 	name = $.trim(name).toLowerCase().replace(" ","_").replace(/^a-z_/i) || "";
-	value = value || '';
+	
+	if(typeof value === 'undefined' || value === 'undefined')
+		value = false;
+	
 	if(!$.empty(name))
 	{
-		if(typeof(Storage) !== "undefined")
+		if(typeof(Storage) != "undefined")
 		{
-			if(!$.empty(value))
+			if(false != value)
 			{
 				localStorage.setItem(name, value);
-				return true;
+				return value;
 			}
-			else if($.isNull(value))
+			else if(null === value)
 			{
 				localStorage.removeItem(name);
-				return true;
+				return null;
 			}
 			else return localStorage.getItem(name);
 		} else {
 			var saveStorage	=	new Cookie("storage_"+name, "/", location.host);
-			if(!$.empty(value))
+			if(false != value)
 			{
-				saveStorage.tempSet(value);
-				return true;
+				saveStorage.set(value,(60*60*24*365*3));
+				return value;
 			}
-			else if($.isNull(value))
+			else if(null === value)
 			{
 				saveStorage.destroy();
-				return true;
+				return null;
 			}
 			else return saveStorage.get();
 		}
-	} else return (typeof(Storage) !== "undefined");
+	} else return (typeof(Storage) != "undefined");
+};
+/*
+*	$(element).keyPress(keyNumber, calback) - This function recognize keyboard keys and return event
+*
+*	EXAMPLE 1 (if keyNumber is false, null or 0, function return key number like event):
+*	--------------------------------------------------------------
+	$(document).keyPress(false, function(e){
+		alert(e);	
+	});
+*
+*	EXAMPLE 2 (return event):
+*	--------------------------------------------------------------
+	$('form#test').keyPress(13, function(e){
+		alert('You press ENTER key!!!');	
+	});
+*/
+$.fn.keyPress = function (keyNumber, callback) {
+	keyNumber = (keyNumber || false);
+	return this.each(function () {
+		$(this).on("keyup", function (e) {
+			var keycode = (typeof e.keyCode != 'undefined' && e.keyCode > -1 ? e.keyCode : e.which);
+			if(keyNumber!=false || keyNumber > 0 || keyNumber!=null)
+			{			
+				if (keycode === keyNumber) {
+					e.preventDefault();
+					if (typeof callback === 'function') {
+						callback.call(this, e);
+					}
+				}
+			}
+			else
+			{
+				e.preventDefault();
+				if (typeof callback === 'function') {
+					return callback.call(this, keycode);
+				}
+			}
+		});
+	});
+};
+
+/*
+*	$(element).press(keyname, calback) - This function recognize keyboard keys by it's names and return event
+*
+*	EXAMPLE
+*	--------------------------------------------------------------
+	$(document).press('enter', function(element, key, event){
+		alert(key);
+	});
+*/
+
+$.fn.press = function(key,callback){
+	var map = {
+		'up' : 38,
+		'down' : 0,
+		'left' : 0,
+		'right' : 0,
+		'enter' : 13,
+		'esc' : 27,
+		'escape' : 27,
+		'tab' : 9,
+		'shift' : 16,
+		'ctrl' : 17,
+		'alt' : 18,
+		'pgup' : 33,
+		'pageup' : 33,
+		'pgdn' : 34,
+		'pagedown' : 34,
+		'home' : 36,
+		'end' : 35,
+		'plus' : 43,
+		'ins' : 45,
+		'insert' : 45,
+		'del' : 46,
+		'delete' : 46,
+	}, $this = this;
+	
+	if(key)
+	{
+		for(i in map)
+		{
+			if(i == key)
+			{
+				return $this.keyPress(map[i], function(e){
+					if (typeof callback === 'function') {
+						callback.call(this, i, e);
+					}
+				});
+			}
+		}
+	}
+	
+	return $this;
+};
+
+/*
+*	$(element).upKey(calback) - This function recognize up key
+*/
+$.fn.upKey = function (callback) {
+    return this.keyPress(38, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).enterKey(calback) - This function recognize enter key
+*/
+$.fn.enterKey = function (callback) {
+    return this.keyPress(13, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).escapeKey(calback) - This function recognize escape key
+*/
+$.fn.escapeKey = function (callback) {
+    return this.keyPress(27, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).tabKey(calback) - This function recognize tab key
+*/
+$.fn.tabKey = function (callback) {
+    return this.keyPress(9, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).shiftKey(calback) - This function recognize shift key
+*/
+$.fn.shiftKey = function (callback) {
+    return this.keyPress(16, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).ctrlKey(calback) - This function recognize control key
+*/
+$.fn.ctrlKey = function (callback) {
+    return this.keyPress(17, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).altKey(calback) - This function recognize alt key
+*/
+$.fn.altKey = function (callback) {
+    return this.keyPress(18, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).capsKey(calback) - This function recognize caps lock key
+*/
+$.fn.capsKey = function (callback) {
+    return this.keyPress(20, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).pageUpKey(calback) - This function recognize page up key
+*/
+$.fn.pageUpKey = function (callback) {
+    return this.keyPress(33, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).pageDownKey(calback) - This function recognize page down key
+*/
+$.fn.pageDownKey = function (callback) {
+    return this.keyPress(34, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).homeKey(calback) - This function recognize home key
+*/
+$.fn.homeKey = function (callback) {
+    return this.keyPress(36, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).endKey(calback) - This function recognize end key
+*/
+$.fn.endKey = function (callback) {
+    return this.keyPress(35, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).plusKey(calback) - This function recognize insert key
+*/
+$.fn.plusKey = function (callback) {
+    return this.keyPress(43, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).insertKey(calback) - This function recognize insert key
+*/
+$.fn.insertKey = function (callback) {
+    return this.keyPress(45, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+
+		}
+	});
+};
+/*
+*	$(element).deleteKey(calback) - This function recognize delete key
+*/
+$.fn.deleteKey = function (callback) {
+    return this.keyPress(46, function(e){
+		if (typeof callback === 'function') {
+			callback.call(this, e);
+		}
+	});
+};
+/*
+*	$(element).createModal({options}) - Create Bootstrap modal and fill content into it
+	
+	EXAMPLE:
+	-----------------------------------------------------
+	<div id="modal"></div>
+	
+	$("#modal").createModal({
+		header		: "New Modal",
+		content		: "Some content...",
+		footer		: "Is footer of modal",
+		keyboard 	: true,		// enable/disable keyboard support
+		static 		: false,	// is static or dynamic
+		close		: true		// enable, disable close button
+		large		: false		// large or small modal
+	}, function(e){
+		// Callback
+	});
+*/
+$.fn.createModal = function (options, callback) {
+	var This	=	this,
+		s =	$.extend({
+			header		:	"",
+			content		:	"No content...",
+			footer		:	"",
+			keyboard 	:	true,
+			static 		:	true,
+			close		:	true,
+			large		:	false,
+			class		:	'',
+		}, options ),
+		currentID = $(This).attr('id').replace(/#/g, '');
+		
+		if(s.class!=='')
+			s.class = ' ' + s.class;
+		
+	This.html("");
+	if($("#cf-modal-"+currentID)!='undefined')	$("#cf-modal-"+currentID).data('modal', null);
+	var modal	= 
+		'<div class="modal fade' + s.class + '" id="cf-modal-'+currentID+'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="'+(s.static?'static':'')+'" data-keyboard="'+(s.keyboard?'true':'false')+'" >'+
+			'<div class="modal-dialog'+(s.large?' modal-lg':'')+'">'+
+				'<div class="modal-content">'+
+					'<div class="modal-header">'+
+						(s.close===true?'<button type="button" class="btn btn-danger" style="float:right; font-size:13px; padding:5px 8px" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span></button>':'')+
+						( s.header!="" ? '<h4>'+s.header+'</h4>' : '' )+
+					'</div>'+
+					'<div class="modal-body">'+s.content+'</div>'+
+					(s.footer!=""?'<div class="modal-footer">'+
+					 	s.footer+
+					'</div>':'')+
+				'</div>'+
+			'</div>'+
+		'</div>';
+	This.html(modal).promise().done(function(){
+		if(typeof callback == 'function')
+			callback(this);
+	});
+		
+	$("#cf-modal-"+currentID).modal("show");
+	$(document).on('hide.bs.modal', "#cf-modal-"+currentID, function(e){
+		$(this).data('modal', null);
+		This.html("");
+		This.text("");
+		This.val("");
+		$(this).remove();
+	});
+	
+	return this;
 };
 /*
 *	$("img").responsiveImage(option) - Make images responsive. option=true for css support
@@ -1746,7 +1894,7 @@ $.fn.replaceWords = function(assocArray){
 			return content.replace(a,b);
 		});
 	});
-	return this;
+	return this;  
 };
 /*
 *	$(element).replaceContent(find, replace) - This function replace words, sentence or any HTML content.
@@ -1757,8 +1905,8 @@ $.fn.replaceWords = function(assocArray){
 $.fn.replaceContent = function(find, replace){
 	this.each(function(){
 		var element = $(this),
-			getHTML = element.html()
-			getParts = getHTML.split(find)
+			getHTML = element.html(),
+			getParts = getHTML.split(find),
 			partMax = getParts.length,
 			save = [];
 		for(var i=0; i<partMax; i++){
@@ -1768,14 +1916,119 @@ $.fn.replaceContent = function(find, replace){
 	});
 	return this;
 }
+
+/*
+	$.moneyFormat(price, sign, position) - This function return money format number with possibility to add sign arround number
+	
+	EXAMPLE:
+	-------------------------------------------
+	var price = 33.5;
+	console.log($.moneyFormat(price, '€', 'left')); 	//- return €33.50
+	console.log($.moneyFormat(price, '€', 'right')); 	//- return 33.50€
+	console.log($.moneyFormat(price, '€', 'none'));		//- return 33.50
+	console.log($.moneyFormat(price, '€'));				//- return €33.50
+	console.log($.moneyFormat(price));					//- return 33.50
+*/
+$.moneyFormat = function(price, sign, position) {
+	if(!sign)
+        sign = '';
+	
+    if(!position || ['left','right','none'].indexOf(position) === -1)
+        position = 'left';
+    
+	const pieces = parseFloat(price).toFixed(2).split('');
+	
+    var ii = (pieces.length - 3);
+	
+    while ((ii-=3) > 0) {
+		pieces.splice(ii, 0, ',');
+	}
+	
+    if(position=='left')
+		return sign + pieces.join('');
+	else if(position=='right')
+		return pieces.join('') + sign;
+	else
+		return pieces.join('');
+}
+
+/* 
+* $(element).placeCaretAtEnd() - Place cared on end of input 
+*/
+$.fn.placeCaretAtEnd = function() {
+    var el = this.get(0);
+    el.focus();
+    if (typeof window.getSelection != "undefined" && typeof document.createRange() != "undefined") {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else if (typeof document.body.createTextRange != "undefined") {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(el);
+        textRange.collapse(false);
+        textRange.select();
+    }
+    return this;
+};
+    
+/* 
+* $(element).placeCaretAtBegin() - Place cared on begin of input 
+*/
+$.fn.placeCaretAtBegin = function(){
+    function moveCaretToStart(el) {
+        if (typeof el.selectionStart == "number") {
+            el.selectionStart = el.selectionEnd = 0;
+        } else if (typeof el.createTextRange != "undefined") {
+            el.focus();
+            var range = el.createTextRange();
+            range.collapse(true);
+            range.select();
+        }
+    }
+    var textBox = this.get(0);
+    textBox.onfocus = function() {
+        moveCaretToStart(textBox);
+        // Work around Chrome's little problem
+        window.setTimeout(function() {
+            moveCaretToStart(textBox);
+        }, 10);
+    };
+    return this;
+};
+    
+/* 
+* $(element).moveCaret(position) - Place caret on crtain position of input 
+*/  
+$.fn.moveCaret = function(position) {
+    var sel, range, win = this, charCount = position;
+    if (win.getSelection) {
+        sel = win.getSelection();
+        if (sel.rangeCount > 0) {
+            var textNode = sel.focusNode;
+            var newOffset = sel.focusOffset + charCount;
+            sel.collapse(textNode, Math.min(textNode.length, newOffset));
+        }
+    } else if ( (sel = win.document.selection) ) {
+        if (sel.type != "Control") {
+            range = sel.createRange();
+            range.move("character", charCount);
+            range.select();
+        }
+    }
+    return this;
+}
+
 //-End jQuery
-}(jQuery));
+}(window.Zepto || window.jQuery));
 /*
 * COOKIE CLASS IN PURE JAVASCRIPT (addition)
 *	new Cookie(name, path, domain, secure) - COOKIE HELPER CLASS
 *	This plugin is used to discount from the set size to zero and returns information.
 *	
-*	USAGE AND EXAMPLE FOR OBJECT ORIANTED:
+*	USAGE AND EXAMPLE FOR OBJECT ORIANTED STYLE:
 *	------------------------------------------------
 	// Path to folder where you whant to setup cookie (DEFAULT: "/" for root)
 	var path	=	"/users";	
@@ -1808,12 +2061,13 @@ function Cookie(name, path, domain, secure) {this.name = name || ""; this.domain
 // Set cookie
 Cookie.prototype.set = function(value, expire) {
   var expires = "";
-	var path 	= 	((this.path!=="")? "; path="+this.path:""),
-		domain 	= 	((this.domain!=="")? "; domain="+this.domain:""),
-		secure 	= 	((this.secure!=="")? "; secure":""),
+	var path 	= 	((this.path!="")? "; path="+this.path:""),
+		domain 	= 	((this.domain!="")? "; domain="+this.domain:""),
+		secure 	= 	((this.secure!="")? "; secure":""),
 		name	=	this.name,
 		expire	=	(expire || "");
-	if(expire > 0)
+	
+    if(expire > 0)
 	{
 		var d = new Date();
 		d.setTime(d.getTime() + ((expire)*60*60*24*1000));
@@ -1823,39 +2077,42 @@ Cookie.prototype.set = function(value, expire) {
 };
 // Set temporary cookie (session expires after closing window)
 Cookie.prototype.tempSet = function(value) {
-	var path 	= 	((this.path!=="")? "; path="+this.path:""),
-		domain 	= 	((this.domain!=="")? "; domain="+this.domain:""),
-		secure 	= 	((this.secure!=="")? "; secure":""),
+	var path 	= 	((this.path!="")? "; path="+this.path:""),
+		domain 	= 	((this.domain!="")? "; domain="+this.domain:""),
+		secure 	= 	((this.secure!="")? "; secure":""),
 		name	=	this.name;
 	document.cookie = name + "=" + value + domain + path + secure + ";";
 };
 // Destroy/Delete Cookie
 Cookie.prototype.destroy = function() {
 	var path = ((this.path==="")? "" : "; path="+this.path),
-		secure 	= 	((this.secure!=="")? "; secure":"");
-	var d = new Date();
+		secure 	= 	((this.secure!="")? "; secure":""),
+        d = new Date();
+    
 	d.setTime(d.getTime() - (10*365*60*60*24*1000));
 	var expires = "; expires="+d.toUTCString();
 	document.cookie = this.name + "=" + value + expires + path + secure + ";";
 };
 // Get cookie value (Return VALUE if exist or BLANK if is empty)
 Cookie.prototype.get = function () {
-	var name = this.name + "=";
-	var ca = document.cookie.split(";");
-	for(var i=0; i<ca.length; i++) {
+	var name = this.name + "=",
+        ca = document.cookie.split(";"), i;
+	
+    for(i=0; i < ca.length; i++) {
 		var c = ca[i];
-		while (c.charAt(0)==" ") c = c.substring(1);
+		while (c.charAt(0)===" ") c = c.substring(1);
 		if (c.indexOf(name) != -1) return c.substring(name.length,c.length);
 	}
 	return "";
 };
 // Check if cookie exist and have value (Return BOOLEAN true/false)
 Cookie.prototype.isset = function () {
-	var name = this.name + "=";
-	var ca = document.cookie.split(";");
-	for(var i=0; i<ca.length; i++) {
+	var name = this.name + "=",
+        ca = document.cookie.split(";"), i;
+	
+    for(i=0; i < ca.length; i++) {
 		var c = ca[i];
-		while (c.charAt(0)==" ") c = c.substring(1);
+		while (c.charAt(0)===" ") c = c.substring(1);
 		if (c.indexOf(name) != -1) return (c.substring(name.length,c.length)===""?false:true);
 	}
 	return false;
