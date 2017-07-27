@@ -6,7 +6,8 @@ Creative Tools is made for faster and easyest orientation in javascript. Idea of
 ### Some cool Creative Tools features:
 
 **Save, edit, delete to HTML5 Local Storage**
-`if($.storage())
+`
+if($.storage())
 {
 	// Set a session storage
 	$.storage('the_storage', 'the_value');
@@ -21,10 +22,12 @@ else
 {
 	// browser not support, use cookie
    	alert("WARNING!!! Your Browser is old and not have Web Storage support.\r\nPerhaps you'll have problems using this site.");
-}`
+}
+`
 
 **Save, edit, delete Cookies**
-`// Set a session cookie
+`
+// Set a session cookie
 $.cookie('the_cookie', 'the_value');
 $.cookie('the_cookie'); // -> 'the_value'
 
@@ -32,10 +35,12 @@ $.cookie('the_cookie'); // -> 'the_value'
 $.cookie('the_cookie', 'the_value', { expires: 7 });
 
 // delete the cookie
-$.cookie('the_cookie', null);`
+$.cookie('the_cookie', null);
+`
 
 **Typing Preview**
-`<input name="text" type="text" id="text">
+`
+<input name="text" type="text" id="text">
 <div id="display"></div>
 <div id="count-letters"></div>
 <div id="count-words"></div>
@@ -48,7 +53,8 @@ $(function($){
 		count_words : '#count-words'
 	});
 });
-</script>`
+</script>
+`
 
 ### Other cool stuffs you can find like
 - Keyboard functions
