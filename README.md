@@ -5,6 +5,22 @@ Creative Tools is made for faster and easyest orientation in javascript. Idea of
 
 ### Some cool Creative Tools features:
 
+**Full Screen Responsive Box**
+```
+<div class="content-box">1</div>
+<div class="content-box">2</div>
+<div class="content-box">3</div>
+<div class="content-box">4</div>
+
+<script>
+$(function($){
+	$(function(){
+		$(".content-box").fullScreen();
+	});
+});
+</script>
+```
+
 **Save, edit, delete to HTML5 Local Storage**
 ```
 if($.storage())
@@ -57,6 +73,7 @@ $(function($){
 ```
 
 ### Other cool stuffs you can find like
+- Responsive
 - Keyboard functions
 - Content & Elements manipulation and checking functions
 - Date & Time functions
