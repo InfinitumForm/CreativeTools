@@ -1,5 +1,5 @@
 /** 
-* Creative Tools v1.0.0
+* Creative Tools v1.1.0
 * 
 * @author Ivijan-Stefan Stipic (creativform@gmail.com)
 * @required jQuery library
@@ -1392,10 +1392,32 @@ $.fn.countdown = function (options,callback) {
 /*
 	$(element).clock(format); - Update element with time value in real time
 */
-$.fn.clock=function(format){
-    var This=this;
+$.fn.clock=function(format,options){
+    var This=this,
+        o=$.extend({
+            full_date_names : [],
+        }, options ),
+        rename = function(str){
+            if(o.full_date_names.length>0)
+            {
+                var engl = ['January','February','March','April','May','June','July','August','September','October','November','December'].map(function(a){
+                    return a.toLocaleLowerCase();
+                }), englMax = engl.length, i=0;
+
+                for(i; i < englMax; i++){
+                    if(o.full_date_names[i] && null!==o.full_date_names[i])
+                    {
+                        str = str.replace(new RegExp("("+engl[i]+")",'gi'), o.full_date_names[i]);
+                    }
+                }
+            }
+            return str;
+        };
 	format=(format||"m-d-Y H:i:s");
-	setInterval(function(){return This.html($.date(format));},1000);
+    This.html(rename($.date(format)));
+	setInterval(function(){
+        return This.html(rename($.date(format)));
+    },1000);
 	return this;
 };
 /* $.cookie(name, [value], [options]); - jQuery cookie plugin for manipulating cookies.
@@ -1772,6 +1794,22 @@ $.fn.deleteKey = function (callback) {
 	});
 };
 /*
+*	$(element).printKey(calback) - This function recognize print events on keyboard
+*/
+$.fn.printKey = function (callback) {
+	return this.each(function () {
+		$(this).on("keyup keydown", function(e){
+			var keycode = (typeof e.keyCode != 'undefined' && e.keyCode > -1 ? e.keyCode : e.which);
+			if(e.ctrlKey && keycode == 80){
+				e.preventDefault();
+				if (typeof callback === 'function') {
+					callback.call(this, e);
+				}
+			}
+		});
+	});
+};
+/*
 *	$(element).createModal({options}) - Create Bootstrap modal and fill content into it
 	
 	EXAMPLE:
@@ -1936,9 +1974,8 @@ $.moneyFormat = function(price, sign, position) {
     if(!position || ['left','right','none'].indexOf(position) === -1)
         position = 'left';
     
-	const pieces = parseFloat(price).toFixed(2).split('');
-	
-    var ii = (pieces.length - 3);
+	var pieces = parseFloat(price).toFixed(2).split(''),
+		ii = (pieces.length - 3);
 	
     while ((ii-=3) > 0) {
 		pieces.splice(ii, 0, ',');
@@ -2023,6 +2060,25 @@ $.fn.moveCaret = function(position) {
 
 //-End jQuery
 }(window.Zepto || window.jQuery));
+
+/**
+ * Convert a string to HTML entities
+ */
+String.prototype.htmlEntitiesEncode = function() {
+	return this.replace(/./gm, function(s) {
+		return "&#" + s.charCodeAt(0) + ";";
+	});
+};
+
+/**
+ * Create string from HTML entities
+ */
+String.htmlEntitiesDecode = function(string) {
+	return (string+"").replace(/&#\d+;/gm,function(s) {
+		return String.fromCharCode(s.match(/\d+/gm)[0]);
+	})
+};
+
 /*
 * COOKIE CLASS IN PURE JAVASCRIPT (addition)
 *	new Cookie(name, path, domain, secure) - COOKIE HELPER CLASS
