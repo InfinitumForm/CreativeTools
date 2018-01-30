@@ -17,7 +17,7 @@ $(function($){
 	$(function(){
 		$(".content-box").fullScreen();
 	});
-});
+}(jQuery));
 </script>
 ```
 
@@ -68,7 +68,39 @@ $(function($){
 		count : '#count-letters',
 		count_words : '#count-words'
 	});
-});
+}(jQuery));
+</script>
+```
+
+**Simple clock with language support**
+```
+<div id="clock"></div>
+<script>
+$(function($){
+	$("#clock").clock("j F Y | H:i:s",{
+		full_date_names : ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december']
+	});
+}(jQuery));
+</script>
+```
+
+**Keyboard Event**
+```
+<form>
+	<!-- SOME INPUTS AND ETC... -->
+</form>
+<script>
+$(function($){
+	$(document).printKey(function($this, event) {
+		/* Do some printing stuffs */
+	});
+	
+	$('form').enterKey(function($this, event) {
+		/* Do some submit stuffs */
+	}).deleteKey(function($this, event) {
+		/* Do some delete stuffs */
+	});
+}(jQuery));
 </script>
 ```
 
@@ -81,6 +113,7 @@ $(function($){
 - Validators
 - Page operators
 - Bootstrap and WebKit popup
+- Encode / Decode HTML entities
 - and more...
 
 This Creative Tools will grow up time to time. Please Fork this work and help me to develop this plugin to become better and useful.
