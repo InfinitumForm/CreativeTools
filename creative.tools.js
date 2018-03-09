@@ -1,5 +1,5 @@
 /** 
-* Creative Tools v1.1.0
+* Creative Tools v1.2.1
 * 
 * @author Ivijan-Stefan Stipic (creativform@gmail.com)
 * @required jQuery library
@@ -1562,18 +1562,37 @@ $.storage = function(name, value){
 	$('form#test').keyPress(13, function(e){
 		alert('You press ENTER key!!!');	
 	});
+*
+*	EXAMPLE 3 (multi key):
+*	--------------------------------------------------------------
+	$('form#test').keyPress([13,32], function(e){
+		alert('You press ENTER or SPACE key!!!');	
+	});
 */
 $.fn.keyPress = function (keyNumber, callback) {
 	keyNumber = (keyNumber || false);
 	return this.each(function () {
 		$(this).on("keyup", function (e) {
 			var keycode = (typeof e.keyCode != 'undefined' && e.keyCode > -1 ? e.keyCode : e.which);
-			if(keyNumber!=false || keyNumber > 0 || keyNumber!=null)
-			{			
-				if (keycode === keyNumber) {
-					e.preventDefault();
-					if (typeof callback === 'function') {
-						callback.call(this, e);
+			
+			if(keyNumber!=false || keyNumber > 0 || keyNumber!=null || (Array.isArray(keyNumber) && keyNumber.length > 0))
+			{	
+				if(Array.isArray(keyNumber))
+				{
+					if (keyNumber.indexOf(keycode) > -1) {
+						e.preventDefault();
+						if (typeof callback === 'function') {
+							callback.call(this, e);
+						}
+					}
+				}
+				else
+				{
+					if (keycode === keyNumber) {
+						e.preventDefault();
+						if (typeof callback === 'function') {
+							callback.call(this, e);
+						}
 					}
 				}
 			}
@@ -1584,6 +1603,8 @@ $.fn.keyPress = function (keyNumber, callback) {
 					return callback.call(this, keycode);
 				}
 			}
+			
+			
 		});
 	});
 };
@@ -2078,6 +2099,32 @@ String.htmlEntitiesDecode = function(string) {
 		return String.fromCharCode(s.match(/\d+/gm)[0]);
 	})
 };
+
+/**
+ * Unserialize string
+ */
+String.prototype.unserialize = function(){
+		var str = decodeURI(this);
+		var pairs = str.split('&');
+		var obj = {}, p, idx, val, l = pairs.length;
+		for (var i=0, n=l; i < n; i++) {
+			p = pairs[i].split('=');
+			idx = p[0];
+
+			if (idx.indexOf("[]") == (idx.length - 2)) {
+				// Eh um vetor
+				var ind = idx.substring(0, idx.length-2)
+				if (obj[ind] === undefined) {
+					obj[ind] = [];
+				}
+				obj[ind].push(p[1]);
+			}
+			else {
+				obj[idx] = p[1];
+			}
+		}
+		return obj;
+	};
 
 /*
 * COOKIE CLASS IN PURE JAVASCRIPT (addition)
