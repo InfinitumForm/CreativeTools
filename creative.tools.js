@@ -1,5 +1,5 @@
 /** 
-* Creative Tools v1.2.1
+* Creative Tools v1.3.0
 * 
 * @author Ivijan-Stefan Stipic (creativform@gmail.com)
 * @required jQuery library
@@ -255,6 +255,39 @@ $.rand = function (min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 /*
+* $.intval(number, min, max) - Create integer number with optional min/max limitation
+*/
+$.intval = function (int, min, max){
+
+   int = int || 0;
+
+   if(min === 0)
+       min = 0;
+   else
+       min = min || -Number.MAX_SAFE_INTEGER;
+
+   if(max === 0)
+       max = 0;
+   else if(max <= min)
+       max = min;
+   else
+       max = Number(max) || Number.MAX_SAFE_INTEGER;
+
+   while(!(int === +int && int === (int|0)))
+   {
+       if (typeof (int) === "string" || int instanceof String) int = parseInt(int);
+       else if (int === +int && int !== (int|0)) int = Math.round(int);
+       else if (null === int) return 0;
+       else  if (isNaN(int)) return 0;
+       else return 0;
+   }
+
+   if (int <= min) int = min;
+   else if (int >= max) int = max;
+
+   return int;
+};
+/*
 *	$.urlExists(url) - Check is URL exists
 */
 $.urlExists = function(url) {
@@ -359,8 +392,10 @@ $.compare = function (value1, value2, operator){
 		return (value1 === value2);
 	else if(operator==='||' || operator==='|' || operator==='or' || operator==='?')
 		return (value1 || value2);
-	else
-		return alert('Operator "'+ operator +'" in function $.compare() is not valid!');
+	else{
+		console.log('Operator "'+ operator +'" in function $.compare() is not valid!');
+            return (value1 === value2);
+        }
 };
 /*
 	$(element).imgRefresh(interval); - Refresh image each ??? milisecond, default 10000 ms (10s);
@@ -590,6 +625,20 @@ $.parseURL = function(str, component) {
 	delete uri.source;
 	return uri;
 };
+/*
+ * $.createObjectURL( file ) - Create Object URL for all browsers
+ */
+$.createObjectURL = function ( file ) {
+    var url = null;
+    if (window.createObjectURL != undefined) { // basic
+        url = window.createObjectURL(file);
+    } else if (window.URL != undefined) { // mozilla(firefox)
+        url = window.URL.createObjectURL(file);
+    } else if (window.webkitURL != undefined) { // webkit or chrome
+        url = window.webkitURL.createObjectURL(file);
+    }
+    return url;
+}
 
 /*
 *	$.validate(variable, filter) - Validate a variable with a specified filter [return value or (BOOLEAN) false]
@@ -2081,6 +2130,74 @@ $.fn.moveCaret = function(position) {
 
 //-End jQuery
 }(window.Zepto || window.jQuery));
+
+/**
+ * Sort array of objects by property value ASC or DESC
+   EXAMPLE:
+   -------------------------------------------
+   var arr = [
+        {
+            tag : 'car',
+            brand : 'bmw'
+        },
+        {
+            tag : 'car',
+            brand : 'audi'
+        },
+        {
+            tag : 'car',
+            brand : 'tesla'
+        }
+   ];
+
+    arr.sortObjectBy('brand'); // ASC
+    arr.sortObjectBy('-brand'); // DESC
+ */
+Array.prototype.sortObjectBy = function(prop) {
+        var f = function (property) {
+            var sortOrder = 1;
+            if(property[0] === "-") {
+                sortOrder = -1;
+                property = property.substr(1);
+            }
+            return function (a,b) {
+                if( !isNaN(a[property]) ) a[property] = Number(a[property]);
+                if( !isNaN(b[property]) ) b[property] = Number(b[property]);
+                var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+                return result * sortOrder;
+            }
+        };
+	return this.sort(f(prop));
+};
+/**
+ * Counts all the values of an array
+ * @reference     http://php.net/manual/en/function.array-count-values.php
+*/
+Array.prototype.arrayCountValues = function () {
+    var array_elements = this,
+            current = null,
+            cnt = 0,
+            obj = {};
+
+    array_elements.sort();
+
+    for (var i = 0; i < array_elements.length; i++) {
+        if (array_elements[i] != current) {
+            if (cnt > 0) {
+                obj[current] = cnt;
+            }
+            current = array_elements[i];
+            cnt = 1;
+        } else {
+            cnt++;
+        }
+    }
+    if (cnt > 0) {
+        obj[current] = cnt;
+    }
+    
+    return obj;
+};
 
 /**
  * Convert a string to HTML entities
