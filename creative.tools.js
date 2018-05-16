@@ -1,5 +1,5 @@
 /** 
-* Creative Tools v1.2.1
+* Creative Tools v1.3.0
 * 
 * @author Ivijan-Stefan Stipic (creativform@gmail.com)
 * @required jQuery library
@@ -538,57 +538,47 @@ $.prepend = function(number, max) {
 	return ((str.length < max) ? $.prepend("0" + str, max) : str);
 };
 /*
-*             discuss at: http://phpjs.org/functions/parse_url/
-*            original by: Steven Levithan (http://blog.stevenlevithan.com)
-*       reimplemented by: Brett Zamir (http://brett-zamir.me)
-*               input by: Lorenzo Pisani
-*               input by: Tony
-*            improved by: Brett Zamir (http://brett-zamir.me)
-* added to CreativeTools: Ivijan-Stefan Stipic (http://creativform.com)
-*                   note: original by http://stevenlevithan.com/demo/parseuri/js/assets/parseuri.js
-*                   note: blog post at http://blog.stevenlevithan.com/archives/parseuri
-*                   note: demo at http://stevenlevithan.com/demo/parseuri/js/assets/parseuri.js
-*                   note: Does not replace invalid characters with '_' as in PHP, nor does it return false with
-*                   note: a seriously malformed URL.
-*                   note: Besides function name, is essentially the same as parseUri as well as our allowing
-*                   note: an extra slash after the scheme/protocol (to allow file:/// as in PHP)
-*
-*                example: $.parseURL('http://username:password@hostname/path?arg=value#anchor');
-*                returns: {scheme: 'http', host: 'hostname', user: 'username', pass: 'password', path: '/path', query: 'arg=value', fragment: 'anchor'}
-*	
 *	LIVE EXAMPLE:
 *	------------------------------------------------
 	var url=$.parseURL('http://creativform.com/webmaster-tools/');
-	alert("Visit our Webmaster Tools: "+url['scheme']+'://'+url['host']);
+	alert("Visit our Webmaster Tools: " + url.protocol + '://' + url.host);
 */
-$.parseURL = function(str, component) {
-	var query, key = ['source', 'scheme', 'authority', 'userInfo', 'user', 'pass', 'host', 'port','relative', 'path', 'directory', 'file', 'query', 'fragment'],
-		ini = (this.php_js && this.php_js.ini) || {},
-		mode = (ini['phpjs.parse_url.mode'] &&
-		ini['phpjs.parse_url.mode'].local_value) || 'php',
-		parser = {
-			php: /^(?:([^:\/?#]+):)?(?:\/\/()(?:(?:()(?:([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?()(?:(()(?:(?:[^?#\/]*\/)*)()(?:[^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
-			strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
-			loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/\/?)?((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/ // Added one optional slash to post-scheme to catch file:/// (should restrict this)
-		};
-	var m = parser[mode].exec(str),
-		uri = {},
-		i = 14;
-	while (i--){if (m[i]) {uri[key[i]] = m[i];}}
+$.parseURL = function(str) {
+	str = str || window.location.href;
 	
-	if (component) {
-		return uri[component.replace('PHP_URL_', '').toLowerCase()];
-	}
-	if (mode != 'php') {
-		var name = (ini['phpjs.parse_url.queryKey'] &&
-		ini['phpjs.parse_url.queryKey'].local_value) || 'queryKey';
-		parser = /(?:^|&)([^&=]*)=?([^&]*)/g;
-		uri[name] = {};
-		query = uri[key[12]] || '';
-		query.replace(parser, function($0, $1, $2){if ($1) {uri[name][$1] = $2;}});
-	}
-	delete uri.source;
-	return uri;
+	var url = new URL(str);
+	
+	url = $.extend({
+		scheme 		: (url.protocol.replace(/:/g,'') || ''),
+		protocol 	: '',
+		host 		: '',
+		hostname 	: '',
+		port 		: '',
+		pathname 	: '',
+		hash 		: '',
+		fragment 	: (url.hash.replace(/\#/,'') || ''),
+		search 		: '',
+		username 	: '',
+		password 	: '',
+		origin 		: '',
+		query 		: (url.search.replace(/\?/i,'') || ''),
+		get			: (
+					Array.from(url.searchParams).reduce((accum, [key, val]) => {
+						accum[key] = val;
+						return accum;
+					}, {})
+					||
+					url.search.split('&').reduce((accum, keyval) => {
+						const [key, val] = keyval.split('=');
+						accum[key] = val;
+						return accum;
+					}, {})
+					)
+	}, url );
+	
+	url.port = (url.port != '' ? url.port : (url.scheme === 'https' ? 443 : 80));
+	
+	return url;
 };
 
 /*
