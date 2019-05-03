@@ -1,5 +1,5 @@
 /** 
-* Creative Tools v1.3.0
+* Creative Tools v1.3.1
 * 
 * @author Ivijan-Stefan Stipic (creativform@gmail.com)
 * @required jQuery library
@@ -255,6 +255,39 @@ $.rand = function (min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 /*
+* $.intval(number, min, max) - Create integer number with optional min/max limitation
+*/
+$.intval = function (int, min, max){
+
+   int = int || 0;
+
+   if(min === 0)
+       min = 0;
+   else
+       min = min || -Number.MAX_SAFE_INTEGER;
+
+   if(max === 0)
+       max = 0;
+   else if(max <= min)
+       max = min;
+   else
+       max = Number(max) || Number.MAX_SAFE_INTEGER;
+
+   while(!(int === +int && int === (int|0)))
+   {
+       if (typeof (int) === "string" || int instanceof String) int = parseInt(int);
+       else if (int === +int && int !== (int|0)) int = Math.round(int);
+       else if (null === int) return 0;
+       else  if (isNaN(int)) return 0;
+       else return 0;
+   }
+
+   if (int <= min) int = min;
+   else if (int >= max) int = max;
+
+   return int;
+};
+/*
 *	$.urlExists(url) - Check is URL exists
 */
 $.urlExists = function(url) {
@@ -359,9 +392,97 @@ $.compare = function (value1, value2, operator){
 		return (value1 === value2);
 	else if(operator==='||' || operator==='|' || operator==='or' || operator==='?')
 		return (value1 || value2);
-	else
-		return alert('Operator "'+ operator +'" in function $.compare() is not valid!');
+	else{
+		console.log('Operator "'+ operator +'" in function $.compare() is not valid!');
+            return (value1 === value2);
+        }
 };
+/*
+* $.isElectron() - Detect if browser is Electron app or not (Bool true/false)
+*/
+$.isElectron = function(){
+	if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
+        return true;
+    }
+
+    // Main process
+    if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
+        return true;
+    }
+
+    // Detect the user agent when the `nodeIntegration` option is set to true
+    if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
+        return true;
+    }
+
+    return false;
+}
+/*
+* $.isChrome() - Detect if browser is Google Crome Browser or not (Bool true/false)
+*/
+$.isCrome = function(){
+	return (/Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor));
+}
+/*
+* $.isEdge() - Detect if browser is Edge Browser or not (Bool true/false)
+*/
+$.isEdge = function(){
+	return (!!window.chrome && /Edge/.test(navigator.userAgent));
+}
+/*
+* $.isFirefox() - Detect if browser is Firefox Browser or not (Bool true/false)
+*/
+$.isFirefox = function(){
+	return (typeof InstallTrigger !== 'undefined' || /Firefox/.test(navigator.userAgent));
+}
+/*
+* $.isIE() - Detect if browser is IE Browser or not (Bool true/false)
+*/
+$.isIE = function(){
+	return ( /* @cc_on!@*/ false || !!document.documentMode || /Trident/.test(navigator.userAgent));
+}
+/*
+* $.isOpera() - Detect if browser is Opera Browser or not (Bool true/false)
+*/
+$.isOpera = function(){
+	return (!!window.chrome && /OPR/.test(navigator.userAgent));
+}
+/*
+* $.isSafari() - Detect if browser is Safari Browser or not (Bool true/false)
+*/
+$.isSafari = function(){
+	return (/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent));
+}
+/*
+* $.isChromiumBased() - Detect if browser is Chromium Based Browser or not (Bool true/false)
+*/
+$.isChromiumBased = function(){
+	return (!!window.chrome && !/Edge/.test(navigator.userAgent));
+}
+/*
+* $.isCordova() - Detect if browser is Cordova Browser or not (Bool true/false)
+*/
+$.isCordova = function(){
+	return (!!window.cordova);
+}
+/*
+* $.isAndroid() - Detect if browser is Android Browser or not (Bool true/false)
+*/
+$.isAndroid = function(){
+	return (/Android/.test(navigator.userAgent));
+}
+/*
+* $.isIOS() - Detect if browser is iOS Browser or not (Bool true/false)
+*/
+$.isIOS = function(){
+	return (/(iPhone|iPad|iPod)/.test(navigator.platform));
+}
+/*
+* $.isBrowserWebComponentsSupported() - Detect is browser web components supported (Bool true/false)
+*/
+$.isBrowserWebComponentsSupported = function(){
+	return ('registerElement' in document && 'import' in document.createElement('link') && 'content' in document.createElement('template'));
+}
 /*
 	$(element).imgRefresh(interval); - Refresh image each ??? milisecond, default 10000 ms (10s);
 	
@@ -538,48 +659,72 @@ $.prepend = function(number, max) {
 	return ((str.length < max) ? $.prepend("0" + str, max) : str);
 };
 /*
+*             discuss at: http://phpjs.org/functions/parse_url/
+*            original by: Steven Levithan (http://blog.stevenlevithan.com)
+*       reimplemented by: Brett Zamir (http://brett-zamir.me)
+*               input by: Lorenzo Pisani
+*               input by: Tony
+*            improved by: Brett Zamir (http://brett-zamir.me)
+* added to CreativeTools: Ivijan-Stefan Stipic (http://creativform.com)
+*                   note: original by http://stevenlevithan.com/demo/parseuri/js/assets/parseuri.js
+*                   note: blog post at http://blog.stevenlevithan.com/archives/parseuri
+*                   note: demo at http://stevenlevithan.com/demo/parseuri/js/assets/parseuri.js
+*                   note: Does not replace invalid characters with '_' as in PHP, nor does it return false with
+*                   note: a seriously malformed URL.
+*                   note: Besides function name, is essentially the same as parseUri as well as our allowing
+*                   note: an extra slash after the scheme/protocol (to allow file:/// as in PHP)
+*
+*                example: $.parseURL('http://username:password@hostname/path?arg=value#anchor');
+*                returns: {scheme: 'http', host: 'hostname', user: 'username', pass: 'password', path: '/path', query: 'arg=value', fragment: 'anchor'}
+*	
 *	LIVE EXAMPLE:
 *	------------------------------------------------
 	var url=$.parseURL('http://creativform.com/webmaster-tools/');
-	alert("Visit our Webmaster Tools: " + url.protocol + '://' + url.host);
+	alert("Visit our Webmaster Tools: "+url['scheme']+'://'+url['host']);
 */
-$.parseURL = function(str) {
-	str = str || window.location.href;
+$.parseURL = function(str, component) {
+	var query, key = ['source', 'scheme', 'authority', 'userInfo', 'user', 'pass', 'host', 'port','relative', 'path', 'directory', 'file', 'query', 'fragment'],
+		ini = (this.php_js && this.php_js.ini) || {},
+		mode = (ini['phpjs.parse_url.mode'] &&
+		ini['phpjs.parse_url.mode'].local_value) || 'php',
+		parser = {
+			php: /^(?:([^:\/?#]+):)?(?:\/\/()(?:(?:()(?:([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?()(?:(()(?:(?:[^?#\/]*\/)*)()(?:[^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+			strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+			loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/\/?)?((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/ // Added one optional slash to post-scheme to catch file:/// (should restrict this)
+		};
+	var m = parser[mode].exec(str),
+		uri = {},
+		i = 14;
+	while (i--){if (m[i]) {uri[key[i]] = m[i];}}
 	
-	var url = new URL(str);
-	
-	url = $.extend({
-		scheme 		: (url.protocol.replace(/:/g,'') || ''),
-		protocol 	: '',
-		host 		: '',
-		hostname 	: '',
-		port 		: '',
-		pathname 	: '',
-		hash 		: '',
-		fragment 	: (url.hash.replace(/\#/,'') || ''),
-		search 		: '',
-		username 	: '',
-		password 	: '',
-		origin 		: '',
-		query 		: (url.search.replace(/\?/i,'') || ''),
-		get			: (
-					Array.from(url.searchParams).reduce((accum, [key, val]) => {
-						accum[key] = val;
-						return accum;
-					}, {})
-					||
-					url.search.split('&').reduce((accum, keyval) => {
-						const [key, val] = keyval.split('=');
-						accum[key] = val;
-						return accum;
-					}, {})
-					)
-	}, url );
-	
-	url.port = (url.port != '' ? url.port : (url.scheme === 'https' ? 443 : 80));
-	
-	return url;
+	if (component) {
+		return uri[component.replace('PHP_URL_', '').toLowerCase()];
+	}
+	if (mode != 'php') {
+		var name = (ini['phpjs.parse_url.queryKey'] &&
+		ini['phpjs.parse_url.queryKey'].local_value) || 'queryKey';
+		parser = /(?:^|&)([^&=]*)=?([^&]*)/g;
+		uri[name] = {};
+		query = uri[key[12]] || '';
+		query.replace(parser, function($0, $1, $2){if ($1) {uri[name][$1] = $2;}});
+	}
+	delete uri.source;
+	return uri;
 };
+/*
+ * $.createObjectURL( file ) - Create Object URL for all browsers
+ */
+$.createObjectURL = function ( file ) {
+    var url = null;
+    if (window.createObjectURL != undefined) { // basic
+        url = window.createObjectURL(file);
+    } else if (window.URL != undefined) { // mozilla(firefox)
+        url = window.URL.createObjectURL(file);
+    } else if (window.webkitURL != undefined) { // webkit or chrome
+        url = window.webkitURL.createObjectURL(file);
+    }
+    return url;
+}
 
 /*
 *	$.validate(variable, filter) - Validate a variable with a specified filter [return value or (BOOLEAN) false]
@@ -1570,27 +1715,27 @@ $.fn.keyPress = function (keyNumber, callback) {
 				if(Array.isArray(keyNumber))
 				{
 					if (keyNumber.indexOf(keycode) > -1) {
-						e.preventDefault();
+					//	e.preventDefault();
 						if (typeof callback === 'function') {
-							callback.call(this, e);
+							return callback.call(this, e);
 						}
 					}
 				}
 				else
 				{
 					if (keycode === keyNumber) {
-						e.preventDefault();
+					//	e.preventDefault();
 						if (typeof callback === 'function') {
-							callback.call(this, e);
+							return callback.call(this, e);;
 						}
 					}
 				}
 			}
 			else
 			{
-				e.preventDefault();
+				//e.preventDefault();
 				if (typeof callback === 'function') {
-					return callback.call(this, keycode);
+					return callback.call(this, e);
 				}
 			}
 			
@@ -1611,14 +1756,21 @@ $.fn.keyPress = function (keyNumber, callback) {
 
 $.fn.press = function(key,callback){
 	var map = {
+		'add' : 107,
+		'multiply' : 106,
+		'subtract' : 109,
+		'decimal_point' : 110,
+		'divide' : 111,
 		'up' : 38,
-		'down' : 0,
-		'left' : 0,
-		'right' : 0,
+		'down' : 40,
+		'left' : 37,
+		'right' : 39,
 		'enter' : 13,
 		'esc' : 27,
 		'escape' : 27,
 		'tab' : 9,
+		'back' : 8,
+		'backspace' : 8,
 		'shift' : 16,
 		'ctrl' : 17,
 		'alt' : 18,
@@ -1626,13 +1778,14 @@ $.fn.press = function(key,callback){
 		'pageup' : 33,
 		'pgdn' : 34,
 		'pagedown' : 34,
+		'space' : 32,
 		'home' : 36,
 		'end' : 35,
 		'plus' : 43,
 		'ins' : 45,
 		'insert' : 45,
 		'del' : 46,
-		'delete' : 46,
+		'delete' : 46
 	}, $this = this;
 	
 	if(key)
@@ -1643,7 +1796,7 @@ $.fn.press = function(key,callback){
 			{
 				return $this.keyPress(map[i], function(e){
 					if (typeof callback === 'function') {
-						callback.call(this, i, e);
+						callback.call(this, e, map[i]);
 					}
 				});
 			}
@@ -2071,6 +2224,74 @@ $.fn.moveCaret = function(position) {
 
 //-End jQuery
 }(window.Zepto || window.jQuery));
+
+/**
+ * Sort array of objects by property value ASC or DESC
+   EXAMPLE:
+   -------------------------------------------
+   var arr = [
+        {
+            tag : 'car',
+            brand : 'bmw'
+        },
+        {
+            tag : 'car',
+            brand : 'audi'
+        },
+        {
+            tag : 'car',
+            brand : 'tesla'
+        }
+   ];
+
+    arr.sortObjectBy('brand'); // ASC
+    arr.sortObjectBy('-brand'); // DESC
+ */
+Array.prototype.sortObjectBy = function(prop) {
+        var f = function (property) {
+            var sortOrder = 1;
+            if(property[0] === "-") {
+                sortOrder = -1;
+                property = property.substr(1);
+            }
+            return function (a,b) {
+                if( !isNaN(a[property]) ) a[property] = Number(a[property]);
+                if( !isNaN(b[property]) ) b[property] = Number(b[property]);
+                var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+                return result * sortOrder;
+            }
+        };
+	return this.sort(f(prop));
+};
+/**
+ * Counts all the values of an array
+ * @reference     http://php.net/manual/en/function.array-count-values.php
+*/
+Array.prototype.arrayCountValues = function () {
+    var array_elements = this,
+            current = null,
+            cnt = 0,
+            obj = {};
+
+    array_elements.sort();
+
+    for (var i = 0; i < array_elements.length; i++) {
+        if (array_elements[i] != current) {
+            if (cnt > 0) {
+                obj[current] = cnt;
+            }
+            current = array_elements[i];
+            cnt = 1;
+        } else {
+            cnt++;
+        }
+    }
+    if (cnt > 0) {
+        obj[current] = cnt;
+    }
+    
+    return obj;
+};
 
 /**
  * Convert a string to HTML entities
